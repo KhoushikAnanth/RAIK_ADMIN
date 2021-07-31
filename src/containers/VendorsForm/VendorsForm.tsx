@@ -1,14 +1,14 @@
 import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import { useMutation, gql } from '@apollo/client';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useDrawerDispatch } from 'context/DrawerContext';
 import Input from 'components/Input/Input';
 import Checkbox from 'components/CheckBox/CheckBox';
-import PhoneInput from 'components/PhoneInput/PhoneInput';
+// import PhoneInput from 'components/PhoneInput/PhoneInput';
 import Button, { KIND } from 'components/Button/Button';
-
+import Uploader from 'components/Uploader/Uploader';
 import DrawerBox from 'components/DrawerBox/DrawerBox';
 import { Row, Col } from 'components/FlexBox/FlexBox';
 import {
@@ -19,31 +19,41 @@ import {
   ButtonGroup,
 } from '../DrawerItems/DrawerItems.style';
 import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+import { Textarea } from 'components/Textarea/Textarea';
+import Select from 'components/Select/Select';
 
-const GET_STAFFS = gql`
-  query getStaffs($role: String, $searchBy: String) {
-    staffs(role: $role, searchBy: $searchBy) {
-      id
-      name
-      email
-      contact_number
-      creation_date
-      role
+const GET_VENDOR = gql`
+  query getVendor($role: String, $searchBy: String) {
+    vendors(role: $role, searchBy: $searchBy) {
+      items{
+        _id
+        name
+        email
+        contact_number
+        creation_date
+        role
+      }
+      totalCount
+      hasMore
     }
   }
 `;
 
-const CREATE_STAFF = gql`
-  mutation createStaff($staff: AddStaffInput!) {
-    createStaff(staff: $staff) {
-      id
-      first_name
-      last_name
+const ADD_VENDOR = gql`
+  mutation addVendor($vendor: AddVendorInput!) {
+    addVendor(vendor: $vendor) {
       name
-      email
-      contact_number
-      creation_date
-      role
+      slug
+      previewUrl
+      thaimbnailUrl
+      type
+      categories
+      description
+      promotion
+      address
+      createdAt
+      updatedAt
+      organisationId
     }
   }
 `;
@@ -55,34 +65,89 @@ const VendorsForm: React.FC<Props> = (props) => {
   const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
     dispatch,
   ]);
-  const { register, handleSubmit } = useForm();
-  const [country, setCountry] = React.useState(undefined);
+  const { register, handleSubmit, setValue } = useForm();
+  // const [country, setCountry] = React.useState(undefined);
   const [checked, setChecked] = React.useState(true);
-  const [text, setText] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [tag, setTag] = React.useState([]);
+  // const [text, setText] = React.useState('');
 
-  const [createStaff] = useMutation(CREATE_STAFF, {
-    update(cache, { data: { createStaff } }) {
-      const { staffs } = cache.readQuery({
-        query: GET_STAFFS,
+  // React.useEffect(() => {
+  //   register({ name: 'name', required: true });
+  //   register({ name: 'slug', required: true });
+  //   register({ name: 'previewUrl' });
+  //   register({ name: 'thumbnail' });
+  //   register({ name: 'categories' });
+  //   register({ name: 'description' });
+  //   register({ name: 'promotion', required: true });
+  //   register({ name: 'address' });
+  // }, [register]);
+
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    setValue('description', value);
+    setDescription(value);
+  };
+
+  const handleAddressChange = (e) => {
+    const value = e.target.value;
+    setValue('address', value);
+    setAddress(value);
+  };
+
+  const handleMultiChange = ({ value }) => {
+    setValue('categories', value);
+    setTag(value);
+  };
+
+  const [addVendor] = useMutation(ADD_VENDOR, {
+    update(cache, { data: { addVendor } }) {
+      const { vendors } = cache.readQuery({
+        query: GET_VENDOR,
       });
-
       cache.writeQuery({
-        query: GET_STAFFS,
-        data: { staffs: staffs.concat([createStaff]) },
+        query: GET_VENDOR,
+        data: { vendors: vendors.concat([addVendor]) },
       });
     },
   });
-  const onSubmit = (data) => {
-    const newStaff = {
-      id: uuidv4(),
-      ...data,
-      role: data.role ? 'admin' : 'staff',
-      creation_date: new Date(),
+
+  const onSubmit = ({ name, slug, previewUrl, thumbnailUrl, type, categories, description, promotion, address, organisation }) => {
+    const newVendor = {
+      name: name,
+      slug: slug,
+      previewUrl:previewUrl,
+      thumbnailUrl:thumbnailUrl,
+      type:type,
+      categories:categories,
+      description:description,
+      promotion:promotion,
+      address:address,
+      createdAt : new Date(),
+      updatedAt: new Date(),
+      organisation:organisation
+      // type: parent[0].value,
     };
-    console.log(data);
-    createStaff({ variables: { staff: newStaff } });
+    addVendor({
+      variables: { vendor: newVendor },
+    });
     closeDrawer();
+    console.log(newVendor, 'newVendor');
   };
+
+  const options = [
+    { value: 'Fruits & Vegetables', name: 'Fruits & Vegetables', id: '1' },
+    { value: 'Meat & Fish', name: 'Meat & Fish', id: '2' },
+    { value: 'Purse', name: 'Purse', id: '3' },
+    { value: 'Hand bags', name: 'Hand bags', id: '4' },
+    { value: 'Shoulder bags', name: 'Shoulder bags', id: '5' },
+    { value: 'Wallet', name: 'Wallet', id: '6' },
+    { value: 'Laptop bags', name: 'Laptop bags', id: '7' },
+    { value: 'Women Dress', name: 'Women Dress', id: '8' },
+    { value: 'Outer Wear', name: 'Outer Wear', id: '9' },
+    { value: 'Pants', name: 'Pants', id: '10' },
+  ];
 
   return (
     <>
@@ -114,39 +179,102 @@ const VendorsForm: React.FC<Props> = (props) => {
             <Col lg={8}>
               <DrawerBox>
                 <FormFields>
-                  <FormLabel>Vendor Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <Input
                     inputRef={register({ required: true, maxLength: 20 })}
-                    name="first_name"
-                  />
-                </FormFields>
-{/* 
-                <FormFields>
-                  <FormLabel>Last Name</FormLabel>
-                  <Input
-                    inputRef={register({ required: true, maxLength: 20 })}
-                    name="last_name"
-                  />
-                </FormFields> */}
-
-                <FormFields>
-                  <FormLabel>Contact No.</FormLabel>
-                  <PhoneInput
-                    country={country}
-                    onCountryChange={({ option }) => setCountry(option)}
-                    text={text}
-                    onTextChange={(e) => setText(e.currentTarget.value)}
-                    inputRef={register({ required: true })}
-                    name="contact_number"
+                    name="name"
                   />
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Slug</FormLabel>
                   <Input
-                    type="email"
+                    inputRef={register({ required: true, maxLength: 20 })}
+                    name="slug"
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Preview Url</FormLabel>
+                  <Uploader
+                    type="file"
+                    // inputRef={register({ required: true })}
+                    name="previewUrl"
+                  />
+                </FormFields>
+                <FormFields>
+                  <FormLabel>Thumbnail</FormLabel>
+                  <Uploader
+                    // type="file"
+                    // inputRef={register({ required: true })}
+                    name="thubnailUrl"
+                  />
+                </FormFields>
+                
+                <FormFields>
+                  <FormLabel>Categories</FormLabel>
+                  <Select
+                    options={options}
+                    labelKey="name"
+                    valueKey="value"
+                    placeholder="Product Tag"
+                    value={tag}
+                    onChange={handleMultiChange}
+                    overrides={{
+                      Placeholder: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      DropdownListItem: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      Popover: {
+                        props: {
+                          overrides: {
+                            Body: {
+                              style: { zIndex: 5 },
+                            },
+                          },
+                        },
+                      },
+                    }}
+                    multi
+                    />
+                </FormFields>
+                <FormFields>
+                  <FormLabel>Description</FormLabel>
+                  <Textarea
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  inputRef={register({ required: true })}
+                  name="description"
+                  />
+                </FormFields>
+                
+                <FormFields>
+                  <FormLabel>Promotion</FormLabel>
+                  <Input
                     inputRef={register({ required: true })}
-                    name="email"
+                    name="promotion"
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Address</FormLabel>
+                  <Textarea
+                    value={address}
+                    onChange={handleAddressChange}
+                    inputRef={register({ required: true })}
+                    name="address"
                   />
                 </FormFields>
               </DrawerBox>
@@ -229,3 +357,4 @@ const VendorsForm: React.FC<Props> = (props) => {
 };
 
 export default VendorsForm;
+
