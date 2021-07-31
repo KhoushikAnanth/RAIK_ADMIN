@@ -10,6 +10,7 @@ export const CUSTOMERS = '/customers';
 export const COUPONS = '/coupons';
 export const SETTINGS = '/settings';
 export const STAFF_MEMBERS = '/staff-members';
+export const VENDORS = '/vendors';
 export const SITE_SETTINGS = '/site-settings';
 // **************** ROUTE CONSTANT END **************************
 

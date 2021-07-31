@@ -9,6 +9,7 @@ import ProductForm from '../ProductForm/ProductForm';
 import ProductUpdateForm from '../ProductForm/ProductUpdateForm';
 import CampaingForm from '../CampaingForm/CampaingForm';
 import CategoryForm from '../CategoryForm/CategoryForm';
+import VendorsForm from '../VendorsForm/VendorsForm';
 import StaffMemberForm from '../StaffMemberForm/StaffMemberForm';
 import Sidebar from '../Layout/Sidebar/Sidebar';
 
@@ -19,6 +20,7 @@ const DRAWER_COMPONENTS = {
   CAMPAING_FORM: CampaingForm,
   CATEGORY_FORM: CategoryForm,
   STAFF_MEMBER_FORM: StaffMemberForm,
+  VENDORS_FORM: VendorsForm,
   SIDEBAR: Sidebar,
 };
 

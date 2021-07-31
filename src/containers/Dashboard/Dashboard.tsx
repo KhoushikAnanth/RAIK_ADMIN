@@ -48,7 +48,7 @@ const Dashboard = () => {
         </Col>
         <Col md={7} lg={8} sm={6}>
           <LineChart
-            widgetTitle="User Hit Rate"
+            widgetTitle="Subscribed User"
             color={['#03D3B5']}
             categories={[
               'January',

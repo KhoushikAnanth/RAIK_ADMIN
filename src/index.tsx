@@ -12,7 +12,7 @@ import 'react-spring-modal/dist/index.css';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 import 'components/Scrollbar/scrollbar.css';
 import './theme/global.css';
-import DemoSwitcher from 'components/DemoSwitcher/SwitcherBtn';
+// import DemoSwitcher from 'components/DemoSwitcher/SwitcherBtn';
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_API_URL,
@@ -29,7 +29,7 @@ function App() {
           <BrowserRouter>
             <Routes />
           </BrowserRouter>
-          <DemoSwitcher />
+          {/* <DemoSwitcher /> */}
         </BaseProvider>
       </StyletronProvider>
     </ApolloProvider>

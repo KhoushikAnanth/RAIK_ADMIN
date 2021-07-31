@@ -14,7 +14,9 @@ import {
   ORDERS,
   CUSTOMERS,
   COUPONS,
+  STAFF_MEMBERS,
   SETTINGS,
+  VENDORS,
 } from 'settings/constants';
 import { AuthContext } from 'context/auth';
 
@@ -24,6 +26,7 @@ import { SidebarCategoryIcon } from 'assets/icons/SidebarCategoryIcon';
 import { OrderIcon } from 'assets/icons/OrderIcon';
 import { CustomerIcon } from 'assets/icons/CustomerIcon';
 import { CouponIcon } from 'assets/icons/CouponIcon';
+// import staff member icon
 import { SettingIcon } from 'assets/icons/SettingIcon';
 import { LogoutIcon } from 'assets/icons/LogoutIcon';
 
@@ -63,6 +66,18 @@ const sidebarMenus = [
     path: COUPONS,
     exact: false,
     icon: <CouponIcon />,
+  },
+  {
+    name: 'Staff Member',
+    path: STAFF_MEMBERS,
+    exact: false,
+    icon: <CustomerIcon />,
+  },
+  {
+    name: 'Vendors',
+    path: VENDORS,
+    exact: false,
+    icon: <CustomerIcon />,
   },
   {
     name: 'Settings',
