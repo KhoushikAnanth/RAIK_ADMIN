@@ -1,18 +1,18 @@
-import React, { useCallback, useState } from 'react';
-import dayjs from 'dayjs';
-import { withStyle, createThemedUseStyletron } from 'baseui';
-import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import { useDrawerDispatch } from 'context/DrawerContext';
-import ProgressBar from 'components/ProgressBar/ProgressBar';
+import React, { useCallback, useState } from "react";
+import dayjs from "dayjs";
+import { withStyle, createThemedUseStyletron } from "baseui";
+import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
+import { useDrawerDispatch } from "context/DrawerContext";
+import ProgressBar from "components/ProgressBar/ProgressBar";
 
-import Select from 'components/Select/Select';
-import Input from 'components/Input/Input';
-import Button from 'components/Button/Button';
+import Select from "components/Select/Select";
+import Input from "components/Input/Input";
+import Button from "components/Button/Button";
 
-import { Plus } from 'assets/icons/PlusMinus';
-import { useQuery, gql } from '@apollo/client';
-import { Wrapper, Header, Heading } from 'components/Wrapper.style';
-import Checkbox from 'components/CheckBox/CheckBox';
+import { Plus } from "assets/icons/PlusMinus";
+import { useQuery, gql } from "@apollo/client";
+import { Wrapper, Header, Heading } from "components/Wrapper.style";
+import Checkbox from "components/CheckBox/CheckBox";
 
 import {
   TableWrapper,
@@ -21,14 +21,18 @@ import {
   StyledBodyCell,
   ProgressWrapper,
   ProgressText,
-  Status,
-} from './Coupon.style';
-import NoResult from 'components/NoResult/NoResult';
+  Status
+} from "./Coupon.style";
+import NoResult from "components/NoResult/NoResult";
 
 const GET_COUPONS = gql`
   query getCoupons($status: String, $searchBy: String) {
-    coupons(status: $status, searchBy: $searchBy) {
-      id
+    coupons(
+      status: $status
+      searchBy: $searchBy
+      organisationID: "610db2e716c19a36ccdde6e8"
+    ) {
+      _id
       title
       code
       number_of_used_coupon
@@ -44,24 +48,24 @@ type CustomThemeT = { red400: string; textNormal: string; colors: any };
 const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
 
 const Col = withStyle(Column, () => ({
-  '@media only screen and (max-width: 767px)': {
-    marginBottom: '20px',
+  "@media only screen and (max-width: 767px)": {
+    marginBottom: "20px",
 
-    ':last-child': {
-      marginBottom: 0,
-    },
-  },
+    ":last-child": {
+      marginBottom: 0
+    }
+  }
 }));
 
 const Row = withStyle(Rows, () => ({
-  '@media only screen and (min-width: 768px)': {
-    alignItems: 'center',
-  },
+  "@media only screen and (min-width: 768px)": {
+    alignItems: "center"
+  }
 }));
 
 const statusSelectOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'revoked', label: 'Revoked' },
+  { value: "active", label: "Active" },
+  { value: "revoked", label: "Revoked" }
 ];
 
 export default function Coupons() {
@@ -70,23 +74,23 @@ export default function Coupons() {
   const [checked, setChecked] = useState(false);
 
   const openDrawer = useCallback(
-    () => dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'CAMPAING_FORM' }),
+    () => dispatch({ type: "OPEN_DRAWER", drawerComponent: "CAMPAING_FORM" }),
     [dispatch]
   );
   const [status, setStatus] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [useCss, theme] = themedUseStyletron();
   const active = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.primary,
-    },
+      backgroundColor: theme.colors.primary
+    }
   });
   const revoked = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.red400,
-    },
+      backgroundColor: theme.colors.red400
+    }
   });
 
   const { data, error, refetch } = useQuery(GET_COUPONS);
@@ -108,7 +112,7 @@ export default function Coupons() {
     setSearch(value);
     refetch({
       status: status.length ? status[0].value : null,
-      searchBy: value,
+      searchBy: value
     });
   }
   function onAllCheck(event) {
@@ -141,7 +145,7 @@ export default function Coupons() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
+              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)"
             }}
           >
             <Col md={2}>
@@ -151,7 +155,7 @@ export default function Coupons() {
             <Col md={10}>
               <Row>
                 <Col md={3}>
-                  <Select
+                  {/* <Select
                     options={statusSelectOptions}
                     labelKey="label"
                     valueKey="value"
@@ -159,16 +163,16 @@ export default function Coupons() {
                     value={status}
                     searchable={false}
                     onChange={handleSelect}
-                  />
+                  /> */}
                 </Col>
 
                 <Col md={5}>
-                  <Input
+                  {/* <Input
                     value={search}
                     placeholder="Ex: Search By Name"
                     onChange={handleSearch}
                     clearable
-                  />
+                  /> */}
                 </Col>
 
                 <Col md={4}>
@@ -179,14 +183,14 @@ export default function Coupons() {
                       BaseButton: {
                         style: ({ $theme, $size, $shape }) => {
                           return {
-                            width: '100%',
-                            borderTopLeftRadius: '3px',
-                            borderTopRightRadius: '3px',
-                            borderBottomLeftRadius: '3px',
-                            borderBottomRightRadius: '3px',
+                            width: "100%",
+                            borderTopLeftRadius: "3px",
+                            borderTopRightRadius: "3px",
+                            borderBottomLeftRadius: "3px",
+                            borderBottomRightRadius: "3px"
                           };
-                        },
-                      },
+                        }
+                      }
                     }}
                   >
                     Create Campaign
@@ -196,7 +200,7 @@ export default function Coupons() {
             </Col>
           </Header>
 
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+          <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
               <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(70px, 70px) minmax(200px, auto) minmax(200px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
                 <StyledHeadCell>
@@ -208,16 +212,16 @@ export default function Coupons() {
                     overrides={{
                       Checkmark: {
                         style: {
-                          borderTopWidth: '2px',
-                          borderRightWidth: '2px',
-                          borderBottomWidth: '2px',
-                          borderLeftWidth: '2px',
-                          borderTopLeftRadius: '4px',
-                          borderTopRightRadius: '4px',
-                          borderBottomRightRadius: '4px',
-                          borderBottomLeftRadius: '4px',
-                        },
-                      },
+                          borderTopWidth: "2px",
+                          borderRightWidth: "2px",
+                          borderBottomWidth: "2px",
+                          borderLeftWidth: "2px",
+                          borderTopLeftRadius: "4px",
+                          borderTopRightRadius: "4px",
+                          borderBottomRightRadius: "4px",
+                          borderBottomLeftRadius: "4px"
+                        }
+                      }
                     }}
                   />
                 </StyledHeadCell>
@@ -244,16 +248,16 @@ export default function Coupons() {
                                 overrides={{
                                   Checkmark: {
                                     style: {
-                                      borderTopWidth: '2px',
-                                      borderRightWidth: '2px',
-                                      borderBottomWidth: '2px',
-                                      borderLeftWidth: '2px',
-                                      borderTopLeftRadius: '4px',
-                                      borderTopRightRadius: '4px',
-                                      borderBottomRightRadius: '4px',
-                                      borderBottomLeftRadius: '4px',
-                                    },
-                                  },
+                                      borderTopWidth: "2px",
+                                      borderRightWidth: "2px",
+                                      borderBottomWidth: "2px",
+                                      borderLeftWidth: "2px",
+                                      borderTopLeftRadius: "4px",
+                                      borderTopRightRadius: "4px",
+                                      borderBottomRightRadius: "4px",
+                                      borderBottomLeftRadius: "4px"
+                                    }
+                                  }
                                 }}
                               />
                             </StyledBodyCell>
@@ -269,30 +273,30 @@ export default function Coupons() {
                                     Bar: {
                                       style: () => {
                                         return {
-                                          backgroundColor: '#F2F2F2',
-                                          marginLeft: '0px',
-                                          marginRight: '0px',
-                                          height: '4px',
-                                          borderTopLeftRadius: '5px',
-                                          borderTopRightRadius: '5px',
-                                          borderBottomLeftRadius: '5px',
-                                          borderBottomRightRadius: '5px',
-                                          position: 'relative',
+                                          backgroundColor: "#F2F2F2",
+                                          marginLeft: "0px",
+                                          marginRight: "0px",
+                                          height: "4px",
+                                          borderTopLeftRadius: "5px",
+                                          borderTopRightRadius: "5px",
+                                          borderBottomLeftRadius: "5px",
+                                          borderBottomRightRadius: "5px",
+                                          position: "relative"
                                         };
-                                      },
+                                      }
                                     },
                                     BarProgress: {
                                       style: ({ $theme }) => {
                                         return {
                                           backgroundColor:
                                             $theme.colors.primary,
-                                          borderTopLeftRadius: '5px',
-                                          borderTopRightRadius: '5px',
-                                          borderBottomLeftRadius: '5px',
-                                          borderBottomRightRadius: '5px',
+                                          borderTopLeftRadius: "5px",
+                                          borderTopRightRadius: "5px",
+                                          borderBottomLeftRadius: "5px",
+                                          borderBottomRightRadius: "5px"
                                         };
-                                      },
-                                    },
+                                      }
+                                    }
                                   }}
                                 />
 
@@ -302,19 +306,19 @@ export default function Coupons() {
                               </ProgressWrapper>
                             </StyledBodyCell>
                             <StyledBodyCell>
-                              {dayjs(row[6]).format('DD MMM YYYY')}
+                              {dayjs(row[6]).format("DD MMM YYYY")}
                             </StyledBodyCell>
                             <StyledBodyCell>
-                              {dayjs(row[7]).format('DD MMM YYYY')}
+                              {dayjs(row[7]).format("DD MMM YYYY")}
                             </StyledBodyCell>
                             <StyledBodyCell>
                               <Status
                                 className={
-                                  row[8] === 'active'
+                                  row[8] === "active"
                                     ? active
-                                    : row[8] === 'revoked'
+                                    : row[8] === "revoked"
                                     ? revoked
-                                    : ''
+                                    : ""
                                 }
                               >
                                 {row[8]}
@@ -327,8 +331,8 @@ export default function Coupons() {
                     <NoResult
                       hideButton={false}
                       style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
+                        gridColumnStart: "1",
+                        gridColumnEnd: "one"
                       }}
                     />
                   )

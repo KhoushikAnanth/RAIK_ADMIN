@@ -1,14 +1,40 @@
-import React from 'react';
+import React from "react";
 import {
   PhoneInput as BasePhoneInput,
   COUNTRIES,
-  SIZE
+  SIZE,
+  CountrySelectDropdown,
+  StyledFlag
 } from "baseui/phone-input";
+
+function CustomFlag(props) {
+  const { children, ...rest } = props;
+  return <StyledFlag iso={props.$iso} {...rest} />;
+}
 
 const PhoneInput = ({ ...props }) => {
   return (
     <BasePhoneInput
-      {...props}
+      text={props.text}
+      country={props.country}
+      onCountryChange={(event) => {
+        props.onCountryChange(event);
+      }}
+      onTextChange={props.onTextChange}
+      overrides={{
+        FlagContainer: {
+          component: CustomFlag
+        },
+        CountrySelect: {
+          props: {
+            overrides: {
+              Dropdown: {
+                component: CountrySelectDropdown
+              }
+            }
+          }
+        }
+      }}
     />
   );
 };

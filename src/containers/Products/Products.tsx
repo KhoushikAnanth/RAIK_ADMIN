@@ -1,80 +1,74 @@
-import React, { useState } from 'react';
-import { styled, withStyle } from 'baseui';
-import Button from 'components/Button/Button';
-import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import Input from 'components/Input/Input';
-import Select from 'components/Select/Select';
-import { useQuery, gql } from '@apollo/client';
-import { Header, Heading } from 'components/Wrapper.style';
-import Fade from 'react-reveal/Fade';
-import ProductCard from 'components/ProductCard/ProductCard';
-import NoResult from 'components/NoResult/NoResult';
-import { CURRENCY } from 'settings/constants';
-import Placeholder from 'components/Placeholder/Placeholder';
+import React, { useEffect, useState } from "react";
+import { styled, withStyle } from "baseui";
+import Button from "components/Button/Button";
+import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
+import Input from "components/Input/Input";
+import Select from "components/Select/Select";
+import { useQuery, gql } from "@apollo/client";
+import { Header, Heading } from "components/Wrapper.style";
+import Fade from "react-reveal/Fade";
+import ProductCard from "components/ProductCard/ProductCard";
+import NoResult from "components/NoResult/NoResult";
+import { CURRENCY } from "settings/constants";
+import Placeholder from "components/Placeholder/Placeholder";
 
-export const ProductsRow = styled('div', ({ $theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  marginTop: '25px',
+export const ProductsRow = styled("div", ({ $theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  marginTop: "25px",
   backgroundColor: $theme.colors.backgroundF7,
-  position: 'relative',
-  zIndex: '1',
+  position: "relative",
+  zIndex: "1",
 
-  '@media only screen and (max-width: 767px)': {
-    marginLeft: '-7.5px',
-    marginRight: '-7.5px',
-    marginTop: '15px',
-  },
+  "@media only screen and (max-width: 767px)": {
+    marginLeft: "-7.5px",
+    marginRight: "-7.5px",
+    marginTop: "15px"
+  }
 }));
 
 export const Col = withStyle(Column, () => ({
-  '@media only screen and (max-width: 767px)': {
-    marginBottom: '20px',
+  "@media only screen and (max-width: 767px)": {
+    marginBottom: "20px",
 
-    ':last-child': {
-      marginBottom: 0,
-    },
-  },
+    ":last-child": {
+      marginBottom: 0
+    }
+  }
 }));
 
 const Row = withStyle(Rows, () => ({
-  '@media only screen and (min-width: 768px) and (max-width: 991px)': {
-    alignItems: 'center',
-  },
+  "@media only screen and (min-width: 768px) and (max-width: 991px)": {
+    alignItems: "center"
+  }
 }));
 
-export const ProductCardWrapper = styled('div', () => ({
-  height: '100%',
+export const ProductCardWrapper = styled("div", () => ({
+  height: "100%"
 }));
 
-export const LoaderWrapper = styled('div', () => ({
-  width: '100%',
-  height: '100vh',
-  display: 'flex',
-  flexWrap: 'wrap',
+export const LoaderWrapper = styled("div", () => ({
+  width: "100%",
+  height: "100vh",
+  display: "flex",
+  flexWrap: "wrap"
 }));
 
-export const LoaderItem = styled('div', () => ({
-  width: '25%',
-  padding: '0 15px',
-  marginBottom: '30px',
+export const LoaderItem = styled("div", () => ({
+  width: "25%",
+  padding: "0 15px",
+  marginBottom: "30px"
 }));
 
 const GET_PRODUCTS = gql`
-  query getProducts(
-    $type: String
-    $sortByPrice: String
-    $searchText: String
-    $offset: Int
-  ) {
+  query getProducts($type: String, $offset: Int) {
     products(
       type: $type
-      sortByPrice: $sortByPrice
-      searchText: $searchText
       offset: $offset
+      organisationID: "610db2e716c19a36ccdde6e8"
     ) {
       items {
-        id
+        _id
         name
         description
         image
@@ -84,21 +78,33 @@ const GET_PRODUCTS = gql`
         salePrice
         discountInPercent
       }
-      totalCount
+      total
       hasMore
     }
   }
 `;
 
+const GET_CATEGORIES = gql`
+  query getCategories($type: String) {
+    categories(type: $type, organisationID: "610db2e716c19a36ccdde6e8") {
+      _id
+      icon
+      name
+      slug
+      type
+    }
+  }
+`;
+
 const typeSelectOptions = [
-  { value: 'grocery', label: 'Grocery' },
-  { value: 'women-cloths', label: 'Women Cloths' },
-  { value: 'bags', label: 'Bags' },
-  { value: 'makeup', label: 'Makeup' },
+  { value: "grocery", label: "Grocery" },
+  { value: "women-cloths", label: "Women Cloths" },
+  { value: "bags", label: "Bags" },
+  { value: "makeup", label: "Makeup" }
 ];
 const priceSelectOptions = [
-  { value: 'highestToLowest', label: 'Highest To Lowest' },
-  { value: 'lowestToHighest', label: 'Lowest To Highest' },
+  { value: "highestToLowest", label: "Highest To Lowest" },
+  { value: "lowestToHighest", label: "Lowest To Highest" }
 ];
 
 export default function Products() {
@@ -108,6 +114,24 @@ export default function Products() {
   const [priceOrder, setPriceOrder] = useState([]);
   const [search, setSearch] = useState([]);
 
+  const [categoryList, setCategoryList] = useState();
+  const { data: categoryData, error: categoriesError } =
+    useQuery(GET_CATEGORIES);
+
+  useEffect(() => {
+    if (categoryData) {
+      let temp = categoryData.categories.map((category) => ({
+        value: category.name,
+        label: category.name
+      }));
+      setCategoryList(temp);
+    }
+  }, [categoryData]);
+
+  if (categoriesError) {
+    return <div>Error in getting categories! {error.message}</div>;
+  }
+
   if (error) {
     return <div>Error! {error.message}</div>;
   }
@@ -115,7 +139,7 @@ export default function Products() {
     toggleLoading(true);
     fetchMore({
       variables: {
-        offset: data.products.items.length,
+        offset: data.products.items.length
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         toggleLoading(false);
@@ -124,21 +148,21 @@ export default function Products() {
           products: {
             __typename: prev.products.__typename,
             items: [...prev.products.items, ...fetchMoreResult.products.items],
-            hasMore: fetchMoreResult.products.hasMore,
-          },
+            hasMore: fetchMoreResult.products.hasMore
+          }
         });
-      },
+      }
     });
   }
   function handlePriceSort({ value }) {
     setPriceOrder(value);
     if (value.length) {
       refetch({
-        sortByPrice: value[0].value,
+        sortByPrice: value[0].value
       });
     } else {
       refetch({
-        sortByPrice: null,
+        sortByPrice: null
       });
     }
   }
@@ -146,11 +170,11 @@ export default function Products() {
     setType(value);
     if (value.length) {
       refetch({
-        type: value[0].value,
+        type: value[0].value
       });
     } else {
       refetch({
-        type: null,
+        type: null
       });
     }
   }
@@ -173,19 +197,19 @@ export default function Products() {
             <Col md={10} xs={12}>
               <Row>
                 <Col md={3} xs={12}>
-                  <Select
-                    options={typeSelectOptions}
+                  {/* <Select
+                    options={categoryList ? categoryList : []}
                     labelKey="label"
                     valueKey="value"
-                    placeholder="Category Type"
+                    placeholder="Category"
                     value={type}
                     searchable={false}
                     onChange={handleCategoryType}
-                  />
+                  /> */}
                 </Col>
 
                 <Col md={3} xs={12}>
-                  <Select
+                  {/* <Select
                     options={priceSelectOptions}
                     labelKey="label"
                     valueKey="value"
@@ -193,16 +217,16 @@ export default function Products() {
                     placeholder="Price"
                     searchable={false}
                     onChange={handlePriceSort}
-                  />
+                  /> */}
                 </Col>
 
                 <Col md={6} xs={12}>
-                  <Input
+                  {/* <Input
                     value={search}
                     placeholder="Ex: Search By Name"
                     onChange={handleSearch}
                     clearable
-                  />
+                  /> */}
                 </Col>
               </Row>
             </Col>
@@ -218,7 +242,7 @@ export default function Products() {
                     sm={6}
                     xs={12}
                     key={index}
-                    style={{ margin: '15px 0' }}
+                    style={{ margin: "15px 0" }}
                   >
                     <Fade bottom duration={800} delay={index * 10}>
                       <ProductCard
@@ -258,7 +282,7 @@ export default function Products() {
             <Row>
               <Col
                 md={12}
-                style={{ display: 'flex', justifyContent: 'center' }}
+                style={{ display: "flex", justifyContent: "center" }}
               >
                 <Button onClick={loadMore} isLoading={loadingMore}>
                   Load More

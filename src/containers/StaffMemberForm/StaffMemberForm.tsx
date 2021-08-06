@@ -1,30 +1,36 @@
-import React, { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
-import { useMutation, gql } from '@apollo/client';
-import { Scrollbars } from 'react-custom-scrollbars';
-import { useDrawerDispatch } from 'context/DrawerContext';
-import Input from 'components/Input/Input';
-import Checkbox from 'components/CheckBox/CheckBox';
-import PhoneInput from 'components/PhoneInput/PhoneInput';
-import Button, { KIND } from 'components/Button/Button';
+import React, { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import { useMutation, gql } from "@apollo/client";
+import { Scrollbars } from "react-custom-scrollbars";
+import { useDrawerDispatch } from "context/DrawerContext";
+import Input from "components/Input/Input";
+import Checkbox from "components/CheckBox/CheckBox";
+import PhoneInput from "components/PhoneInput/PhoneInput";
+import Button, { KIND } from "components/Button/Button";
 
-import DrawerBox from 'components/DrawerBox/DrawerBox';
-import { Row, Col } from 'components/FlexBox/FlexBox';
+import DrawerBox from "components/DrawerBox/DrawerBox";
+import { Row, Col } from "components/FlexBox/FlexBox";
 import {
   Form,
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
-  ButtonGroup,
-} from '../DrawerItems/DrawerItems.style';
-import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+  ButtonGroup
+} from "../DrawerItems/DrawerItems.style";
+import { FormFields, FormLabel } from "components/FormFields/FormFields";
 
 const GET_STAFFS = gql`
   query getStaffs($role: String, $searchBy: String) {
-    staffs(role: $role, searchBy: $searchBy) {
-      id
-      name
+    staffs(
+      organisationID: "610db2e716c19a36ccdde6e8"
+      role: $role
+      searchBy: $searchBy
+    ) {
+      _id
+      staffID
+      first_name
+      last_name
       email
       contact_number
       creation_date
@@ -35,11 +41,11 @@ const GET_STAFFS = gql`
 
 const CREATE_STAFF = gql`
   mutation createStaff($staff: AddStaffInput!) {
-    createStaff(staff: $staff) {
-      id
+    createStaff(staffInput: $staff) {
+      _id
+      staffID
       first_name
       last_name
-      name
       email
       contact_number
       creation_date
@@ -52,32 +58,30 @@ type Props = any;
 
 const StaffMemberForm: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
-    dispatch,
-  ]);
+  const closeDrawer = useCallback(
+    () => dispatch({ type: "CLOSE_DRAWER" }),
+    [dispatch]
+  );
   const { register, handleSubmit } = useForm();
-  const [country, setCountry] = React.useState(undefined);
-  const [checked, setChecked] = React.useState(true);
-  const [text, setText] = React.useState('');
-
-  const [createStaff] = useMutation(CREATE_STAFF, {
-    update(cache, { data: { createStaff } }) {
-      const { staffs } = cache.readQuery({
-        query: GET_STAFFS,
-      });
-
-      cache.writeQuery({
-        query: GET_STAFFS,
-        data: { staffs: staffs.concat([createStaff]) },
-      });
-    },
+  const [country, setCountry] = React.useState({
+    label: "India (भारत)",
+    id: "IN",
+    dialCode: "+91"
   });
+  const [checked, setChecked] = React.useState(true);
+  const [text, setText] = React.useState("");
+
+  const [createStaff] = useMutation(CREATE_STAFF);
   const onSubmit = (data) => {
     const newStaff = {
-      id: uuidv4(),
-      ...data,
-      role: data.role ? 'admin' : 'staff',
+      staffID: data.staffID,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      contact_number: text,
+      email: data.email,
+      role: data.role ? "admin" : "staff",
       creation_date: new Date(),
+      organisationID: "610db2e716c19a36ccdde6e8"
     };
     console.log(data);
     createStaff({ variables: { staff: newStaff } });
@@ -90,16 +94,16 @@ const StaffMemberForm: React.FC<Props> = (props) => {
         <DrawerTitle>Add Staff Member</DrawerTitle>
       </DrawerTitleWrapper>
 
-      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
+      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: "100%" }}>
         <Scrollbars
           autoHide
           renderView={(props) => (
-            <div {...props} style={{ ...props.style, overflowX: 'hidden' }} />
+            <div {...props} style={{ ...props.style, overflowX: "hidden" }} />
           )}
           renderTrackHorizontal={(props) => (
             <div
               {...props}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               className="track-horizontal"
             />
           )}
@@ -130,6 +134,14 @@ const StaffMemberForm: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
+                  <FormLabel>Staff ID</FormLabel>
+                  <Input
+                    inputRef={register({ required: true, maxLength: 20 })}
+                    name="staffID"
+                  />
+                </FormFields>
+
+                <FormFields>
                   <FormLabel>Contact No.</FormLabel>
                   <PhoneInput
                     country={country}
@@ -153,7 +165,7 @@ const StaffMemberForm: React.FC<Props> = (props) => {
             </Col>
           </Row>
 
-          <Row>
+          {/* <Row>
             <Col lg={4}>
               <FieldDetails>
                 Expand or restrict user’s permissions to access certain part of
@@ -172,9 +184,9 @@ const StaffMemberForm: React.FC<Props> = (props) => {
                     overrides={{
                       Label: {
                         style: ({ $theme }) => ({
-                          color: $theme.colors.textNormal,
-                        }),
-                      },
+                          color: $theme.colors.textNormal
+                        })
+                      }
                     }}
                   >
                     Access for created account
@@ -182,7 +194,7 @@ const StaffMemberForm: React.FC<Props> = (props) => {
                 </FormFields>
               </DrawerBox>
             </Col>
-          </Row>
+          </Row> */}
         </Scrollbars>
 
         <ButtonGroup>
@@ -192,15 +204,15 @@ const StaffMemberForm: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  marginRight: '15px',
-                  color: $theme.colors.red400,
-                }),
-              },
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  marginRight: "15px",
+                  color: $theme.colors.red400
+                })
+              }
             }}
           >
             Cancel
@@ -211,13 +223,13 @@ const StaffMemberForm: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                }),
-              },
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px"
+                })
+              }
             }}
           >
             Add Staff

@@ -1,91 +1,97 @@
-import React, { useCallback, useState } from 'react';
-import dayjs from 'dayjs';
-import { withStyle } from 'baseui';
-import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import { useDrawerDispatch } from 'context/DrawerContext';
-import Select from 'components/Select/Select';
-import Input from 'components/Input/Input';
-import Button from 'components/Button/Button';
+import React, { useCallback, useState } from "react";
+import dayjs from "dayjs";
+import { withStyle } from "baseui";
+import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
+import { useDrawerDispatch } from "context/DrawerContext";
+import Select from "components/Select/Select";
+import Input from "components/Input/Input";
+import Button from "components/Button/Button";
 
-import { Plus } from 'assets/icons/PlusMinus';
+import { Plus } from "assets/icons/PlusMinus";
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql } from "@apollo/client";
 
-import { Wrapper, Header, Heading } from 'components/Wrapper.style';
+import { Wrapper, Header, Heading } from "components/Wrapper.style";
 
 import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledBodyCell,
-} from './Vendors.style';
-import NoResult from 'components/NoResult/NoResult';
+  StyledBodyCell
+} from "./Vendors.style";
+import NoResult from "components/NoResult/NoResult";
 
-const GET_STAFFS = gql`
-  query getStaffs($role: String, $searchBy: String) {
-    staffs(role: $role, searchBy: $searchBy) {
-      id
-      name
-      email
-      contact_number
-      creation_date
-      role
+const GET_VENDORS = gql`
+  query getVendors($type: String, $offset: Int) {
+    vendors(
+      type: $type
+      offset: $offset
+      organisationID: "610db2e716c19a36ccdde6e8"
+    ) {
+      items {
+        _id
+        name
+        slug
+        email
+        contact_number
+        address
+        previewUrl
+        thumbnailUrl
+        description
+        createdAt
+        updatedAt
+      }
     }
   }
 `;
 
 const Col = withStyle(Column, () => ({
-  '@media only screen and (max-width: 767px)': {
-    marginBottom: '20px',
+  "@media only screen and (max-width: 767px)": {
+    marginBottom: "20px",
 
-    ':last-child': {
-      marginBottom: 0,
-    },
-  },
+    ":last-child": {
+      marginBottom: 0
+    }
+  }
 }));
 
 const Row = withStyle(Rows, () => ({
-  '@media only screen and (min-width: 768px)': {
-    alignItems: 'center',
-  },
+  "@media only screen and (min-width: 768px)": {
+    alignItems: "center"
+  }
 }));
 
 const roleSelectOptions = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'member', label: 'Member' },
-  { value: 'delivery boy', label: 'Delivery boy' },
+  { value: "admin", label: "Admin" },
+  { value: "manager", label: "Manager" },
+  { value: "member", label: "Member" },
+  { value: "delivery boy", label: "Delivery boy" }
 ];
 
 export default function Vendors() {
   const dispatch = useDrawerDispatch();
 
   const openDrawer = useCallback(
-    () =>
-      dispatch({ type: 'OPEN_DRAWER', drawerComponent: 'VENDORS_FORM' }),
+    () => dispatch({ type: "OPEN_DRAWER", drawerComponent: "VENDORS_FORM" }),
     [dispatch]
   );
   const [role, setRole] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
-  const { data, error, refetch } = useQuery(GET_STAFFS);
+  const { data, error, refetch } = useQuery(GET_VENDORS);
   if (error) {
     return <div>Error! {error.message}</div>;
   }
+
+  console.log(data);
+
   function handleCategory({ value }) {
     setRole(value);
-    if (value.length) {
-      refetch({ role: value[0].value, searchBy: search });
-    } else {
-      refetch({
-        role: null,
-      });
-    }
   }
+
   function handleSearch(event) {
     const value = event.currentTarget.value;
     setSearch(value);
-    refetch({ searchBy: value });
   }
 
   return (
@@ -95,7 +101,7 @@ export default function Vendors() {
           <Header
             style={{
               marginBottom: 40,
-              boxShadow: '0 0 5px rgba(0, 0 ,0, 0.05)',
+              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)"
             }}
           >
             <Col md={3} xs={12}>
@@ -104,8 +110,8 @@ export default function Vendors() {
 
             <Col md={9} xs={12}>
               <Row>
-                {/* <Col md={3} xs={12}>
-                  <Select
+                <Col md={3} xs={12}>
+                  {/* <Select
                     options={roleSelectOptions}
                     labelKey="label"
                     valueKey="value"
@@ -113,16 +119,16 @@ export default function Vendors() {
                     value={role}
                     searchable={false}
                     onChange={handleCategory}
-                  />
-                </Col> */}
+                  /> */}
+                </Col>
 
                 <Col md={5} xs={12}>
-                  <Input
+                  {/* <Input
                     value={search}
                     placeholder="Ex: Quick Search By Name"
                     onChange={handleSearch}
                     clearable
-                  />
+                  /> */}
                 </Col>
 
                 <Col md={4} xs={12}>
@@ -132,13 +138,13 @@ export default function Vendors() {
                     overrides={{
                       BaseButton: {
                         style: () => ({
-                          width: '100%',
-                          borderTopLeftRadius: '3px',
-                          borderTopRightRadius: '3px',
-                          borderBottomLeftRadius: '3px',
-                          borderBottomRightRadius: '3px',
-                        }),
-                      },
+                          width: "100%",
+                          borderTopLeftRadius: "3px",
+                          borderTopRightRadius: "3px",
+                          borderBottomLeftRadius: "3px",
+                          borderBottomRightRadius: "3px"
+                        })
+                      }
                     }}
                   >
                     Add Vendors
@@ -148,7 +154,7 @@ export default function Vendors() {
             </Col>
           </Header>
 
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+          <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
               <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(270px, max-content) minmax(270px, max-content) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto)">
                 <StyledHeadCell>ID</StyledHeadCell>
@@ -156,30 +162,30 @@ export default function Vendors() {
                 <StyledHeadCell>Email</StyledHeadCell>
                 <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Joining Date</StyledHeadCell>
-                {/* <StyledHeadCell>Role</StyledHeadCell> */}
+                <StyledHeadCell>Address</StyledHeadCell>
 
                 {data ? (
-                  data.staffs.length ? (
-                    data.staffs
-                      .map((item) => Object.values(item))
-                      .map((row, index) => (
-                        <React.Fragment key={index}>
-                          <StyledBodyCell>{row[1].slice(0, 6)}</StyledBodyCell>
-                          <StyledBodyCell>{row[2]}</StyledBodyCell>
-                          <StyledBodyCell>{row[3]}</StyledBodyCell>
-                          <StyledBodyCell>{row[4]}</StyledBodyCell>
-                          <StyledBodyCell>
-                            {dayjs(row[5]).format('DD MMM YYYY')}
-                          </StyledBodyCell>
-                          <StyledBodyCell>{row[6]}</StyledBodyCell>
-                        </React.Fragment>
-                      ))
+                  data.vendors.items.length ? (
+                    data.vendors.items.map((row, index) => (
+                      <React.Fragment key={index}>
+                        <StyledBodyCell>
+                          {row["_id"].slice(0, 6)}
+                        </StyledBodyCell>
+                        <StyledBodyCell>{row["name"]}</StyledBodyCell>
+                        <StyledBodyCell>{row["email"]}</StyledBodyCell>
+                        <StyledBodyCell>{row["contact_number"]}</StyledBodyCell>
+                        <StyledBodyCell>
+                          {dayjs(row["createdAt"]).format("DD MMM YYYY")}
+                        </StyledBodyCell>
+                        <StyledBodyCell>{row["address"]}</StyledBodyCell>
+                      </React.Fragment>
+                    ))
                   ) : (
                     <NoResult
                       hideButton={false}
                       style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
+                        gridColumnStart: "1",
+                        gridColumnEnd: "one"
                       }}
                     />
                   )

@@ -1,44 +1,45 @@
-import React, { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
-import { useMutation, gql } from '@apollo/client';
-import { Scrollbars } from 'react-custom-scrollbars';
-import { useDrawerDispatch } from 'context/DrawerContext';
-import Uploader from 'components/Uploader/Uploader';
-import Button, { KIND } from 'components/Button/Button';
-import DrawerBox from 'components/DrawerBox/DrawerBox';
-import { Row, Col } from 'components/FlexBox/FlexBox';
-import Input from 'components/Input/Input';
-import { Textarea } from 'components/Textarea/Textarea';
-import Select from 'components/Select/Select';
-import { FormFields, FormLabel } from 'components/FormFields/FormFields';
+import React, { useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import { useMutation, gql, useQuery } from "@apollo/client";
+import { Scrollbars } from "react-custom-scrollbars";
+import { useDrawerDispatch } from "context/DrawerContext";
+import Uploader from "components/Uploader/Uploader";
+import Button, { KIND } from "components/Button/Button";
+import DrawerBox from "components/DrawerBox/DrawerBox";
+import { Row, Col } from "components/FlexBox/FlexBox";
+import Input from "components/Input/Input";
+import { Textarea } from "components/Textarea/Textarea";
+import Select from "components/Select/Select";
+import { FormFields, FormLabel } from "components/FormFields/FormFields";
 
 import {
   Form,
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
-  ButtonGroup,
-} from '../DrawerItems/DrawerItems.style';
+  ButtonGroup
+} from "../DrawerItems/DrawerItems.style";
+import UploadFiles from "utilities/uploadFile";
 
 const options = [
-  { value: 'Fruits & Vegetables', name: 'Fruits & Vegetables', id: '1' },
-  { value: 'Meat & Fish', name: 'Meat & Fish', id: '2' },
-  { value: 'Purse', name: 'Purse', id: '3' },
-  { value: 'Hand bags', name: 'Hand bags', id: '4' },
-  { value: 'Shoulder bags', name: 'Shoulder bags', id: '5' },
-  { value: 'Wallet', name: 'Wallet', id: '6' },
-  { value: 'Laptop bags', name: 'Laptop bags', id: '7' },
-  { value: 'Women Dress', name: 'Women Dress', id: '8' },
-  { value: 'Outer Wear', name: 'Outer Wear', id: '9' },
-  { value: 'Pants', name: 'Pants', id: '10' },
+  { value: "Fruits & Vegetables", name: "Fruits & Vegetables", id: "1" },
+  { value: "Meat & Fish", name: "Meat & Fish", id: "2" },
+  { value: "Purse", name: "Purse", id: "3" },
+  { value: "Hand bags", name: "Hand bags", id: "4" },
+  { value: "Shoulder bags", name: "Shoulder bags", id: "5" },
+  { value: "Wallet", name: "Wallet", id: "6" },
+  { value: "Laptop bags", name: "Laptop bags", id: "7" },
+  { value: "Women Dress", name: "Women Dress", id: "8" },
+  { value: "Outer Wear", name: "Outer Wear", id: "9" },
+  { value: "Pants", name: "Pants", id: "10" }
 ];
 
 const typeOptions = [
-  { value: 'grocery', name: 'Grocery', id: '1' },
-  { value: 'women-cloths', name: 'Women Cloths', id: '2' },
-  { value: 'bags', name: 'Bags', id: '3' },
-  { value: 'makeup', name: 'Makeup', id: '4' },
+  { value: "grocery", name: "Grocery", id: "1" },
+  { value: "women-cloths", name: "Women Cloths", id: "2" },
+  { value: "bags", name: "Bags", id: "3" },
+  { value: "makeup", name: "Makeup", id: "4" }
 ];
 const GET_PRODUCTS = gql`
   query getProducts(
@@ -70,97 +71,119 @@ const GET_PRODUCTS = gql`
 `;
 const CREATE_PRODUCT = gql`
   mutation createProduct($product: AddProductInput!) {
-    createProduct(product: $product) {
-      id
+    createProduct(productInput: $product) {
+      _id
       name
       image
       slug
       type
       price
-      unit
       description
       salePrice
       discountInPercent
-      # per_unit
       quantity
-      # creation_date
+      creation_date
     }
   }
 `;
+
+const GET_CATEGORIES = gql`
+  query getCategories($type: String) {
+    categories(type: $type, organisationID: "610db2e716c19a36ccdde6e8") {
+      _id
+      icon
+      name
+      slug
+      type
+    }
+  }
+`;
+
 type Props = any;
 
 const AddProduct: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(() => dispatch({ type: 'CLOSE_DRAWER' }), [
-    dispatch,
-  ]);
+  const closeDrawer = useCallback(
+    () => dispatch({ type: "CLOSE_DRAWER" }),
+    [dispatch]
+  );
   const { register, handleSubmit, setValue } = useForm();
   const [type, setType] = useState([]);
   const [tag, setTag] = useState([]);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
+  const [selectedFiles, setFiles] = useState();
+
+  const [categoryList, setCategoryList] = useState();
+  const { data: categoryData, error: categoriesError } =
+    useQuery(GET_CATEGORIES);
 
   React.useEffect(() => {
-    register({ name: 'type' });
-    register({ name: 'categories' });
-    register({ name: 'image', required: true });
-    register({ name: 'description' });
+    if (categoryData) {
+      let temp = categoryData.categories.map((category) => ({
+        value: category._id,
+        name: category.name,
+        id: category._id
+      }));
+      setCategoryList(temp);
+    }
+  }, [categoryData]);
+
+  React.useEffect(() => {
+    register({ name: "categories" });
+    register({ name: "images", required: true });
+    register({ name: "description" });
   }, [register]);
 
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
-    setValue('description', value);
+    setValue("description", value);
     setDescription(value);
   };
 
-  const [createProduct] = useMutation(CREATE_PRODUCT, {
-    update(cache, { data: { createProduct } }) {
-      const { products } = cache.readQuery({
-        query: GET_PRODUCTS,
-      });
+  const [createProduct] = useMutation(CREATE_PRODUCT);
 
-      cache.writeQuery({
-        query: GET_PRODUCTS,
-        data: {
-          products: {
-            __typename: products.__typename,
-            items: [createProduct, ...products.items],
-            hasMore: true,
-            totalCount: products.items.length + 1,
-          },
-        },
-      });
-    },
-  });
   const handleMultiChange = ({ value }) => {
-    setValue('categories', value);
+    setValue("categories", value);
     setTag(value);
   };
 
   const handleTypeChange = ({ value }) => {
-    setValue('type', value);
+    setValue("type", value);
     setType(value);
   };
+
   const handleUploader = (files) => {
-    setValue('image', files[0].path);
+    if (files.length) {
+      setFiles(files);
+    }
   };
-  const onSubmit = (data) => {
+
+  const onSubmit = async (data) => {
+    let fileURLs = selectedFiles ? await UploadFiles(selectedFiles) : null;
+
+    console.log(data);
+
+    let categoryIDs = data.categories.map((category: any) => category.id);
+    console.log(categoryIDs);
+
     const newProduct = {
-      id: uuidv4(),
       name: data.name,
-      type: data.type[0].value,
+      slug: data.slug,
       description: data.description,
-      image: data.image && data.image.length !== 0 ? data.image : '',
+      images: fileURLs ? fileURLs : undefined,
       price: Number(data.price),
-      unit: data.unit,
+      // unit: data.unit,
       salePrice: Number(data.salePrice),
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
-      slug: data.name,
+      categoryIDs: categoryIDs,
+      weightInGrams: Number(data.weightInGrams),
       creation_date: new Date(),
+      organisationID: "610db2e716c19a36ccdde6e8"
     };
-    console.log(newProduct, 'newProduct data');
+    console.log(newProduct, "newProduct data");
     createProduct({
-      variables: { product: newProduct },
+      variables: { product: newProduct }
     });
     closeDrawer();
   };
@@ -171,16 +194,16 @@ const AddProduct: React.FC<Props> = (props) => {
         <DrawerTitle>Add Product</DrawerTitle>
       </DrawerTitleWrapper>
 
-      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%' }}>
+      <Form onSubmit={handleSubmit(onSubmit)} style={{ height: "100%" }}>
         <Scrollbars
           autoHide
           renderView={(props) => (
-            <div {...props} style={{ ...props.style, overflowX: 'hidden' }} />
+            <div {...props} style={{ ...props.style, overflowX: "hidden" }} />
           )}
           renderTrackHorizontal={(props) => (
             <div
               {...props}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               className="track-horizontal"
             />
           )}
@@ -194,16 +217,16 @@ const AddProduct: React.FC<Props> = (props) => {
                 overrides={{
                   Block: {
                     style: {
-                      width: '100%',
-                      height: 'auto',
-                      padding: '30px',
-                      borderRadius: '3px',
-                      backgroundColor: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    },
-                  },
+                      width: "100%",
+                      height: "auto",
+                      padding: "30px",
+                      borderRadius: "3px",
+                      backgroundColor: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }
+                  }
                 }}
               >
                 <Uploader onChange={handleUploader} />
@@ -229,6 +252,14 @@ const AddProduct: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
+                  <FormLabel>Slug</FormLabel>
+                  <Input
+                    inputRef={register({ required: true, maxLength: 30 })}
+                    name="slug"
+                  />
+                </FormFields>
+
+                <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
                     value={description}
@@ -236,10 +267,10 @@ const AddProduct: React.FC<Props> = (props) => {
                   />
                 </FormFields>
 
-                <FormFields>
+                {/* <FormFields>
                   <FormLabel>Unit</FormLabel>
                   <Input type="text" inputRef={register} name="unit" />
-                </FormFields>
+                </FormFields> */}
 
                 <FormFields>
                   <FormLabel>Price</FormLabel>
@@ -273,7 +304,7 @@ const AddProduct: React.FC<Props> = (props) => {
                   />
                 </FormFields>
 
-                <FormFields>
+                {/* <FormFields>
                   <FormLabel>Type</FormLabel>
                   <Select
                     options={typeOptions}
@@ -288,17 +319,17 @@ const AddProduct: React.FC<Props> = (props) => {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
+                            color: $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       DropdownListItem: {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
+                            color: $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       OptionContent: {
                         style: ({ $theme, $selected }) => {
@@ -306,35 +337,44 @@ const AddProduct: React.FC<Props> = (props) => {
                             ...$theme.typography.fontBold14,
                             color: $selected
                               ? $theme.colors.textDark
-                              : $theme.colors.textNormal,
+                              : $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       SingleValue: {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
+                            color: $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       Popover: {
                         props: {
                           overrides: {
                             Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
+                              style: { zIndex: 5 }
+                            }
+                          }
+                        }
+                      }
                     }}
+                  />
+                </FormFields> */}
+
+                <FormFields>
+                  <FormLabel>Weight (In grams)</FormLabel>
+                  <Input
+                    type="number"
+                    inputRef={register({ required: true })}
+                    name="weightInGrams"
                   />
                 </FormFields>
 
                 <FormFields>
                   <FormLabel>Categories</FormLabel>
                   <Select
-                    options={options}
+                    options={categoryList ? categoryList : {}}
                     labelKey="name"
                     valueKey="value"
                     placeholder="Product Tag"
@@ -345,27 +385,27 @@ const AddProduct: React.FC<Props> = (props) => {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
+                            color: $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       DropdownListItem: {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal,
+                            color: $theme.colors.textNormal
                           };
-                        },
+                        }
                       },
                       Popover: {
                         props: {
                           overrides: {
                             Body: {
-                              style: { zIndex: 5 },
-                            },
-                          },
-                        },
-                      },
+                              style: { zIndex: 5 }
+                            }
+                          }
+                        }
+                      }
                     }}
                     multi
                   />
@@ -382,15 +422,15 @@ const AddProduct: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                  marginRight: '15px',
-                  color: $theme.colors.red400,
-                }),
-              },
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  marginRight: "15px",
+                  color: $theme.colors.red400
+                })
+              }
             }}
           >
             Cancel
@@ -401,13 +441,13 @@ const AddProduct: React.FC<Props> = (props) => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: '50%',
-                  borderTopLeftRadius: '3px',
-                  borderTopRightRadius: '3px',
-                  borderBottomRightRadius: '3px',
-                  borderBottomLeftRadius: '3px',
-                }),
-              },
+                  width: "50%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  borderBottomLeftRadius: "3px"
+                })
+              }
             }}
           >
             Create Product
