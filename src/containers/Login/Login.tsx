@@ -37,10 +37,15 @@ export default () => {
   if (isAuthenticated) return <Redirect to={{ pathname: "/" }} />;
 
   let { from } = (location.state as any) || { from: { pathname: "/" } };
-  let login = ({ username, password }) => {
-    authenticate({ username, password }, () => {
-      history.replace(from);
-    });
+  let login = ({ username, password }, actions) => {
+    if (username === "staff@jxtapose.com" && password === "staff123") {
+      authenticate({ username, password }, () => {
+        history.replace(from);
+      });
+    } else {
+      actions.setSubmitting(false);
+      actions.resetForm();
+    }
   };
   return (
     <Wrapper>
@@ -63,7 +68,7 @@ export default () => {
                   type="email"
                   name="username"
                   component={MyInput}
-                  placeholder="Ex: demo@demo.com"
+                  placeholder="demo@demo.com"
                 />
                 {errors.username && touched.username && (
                   <Error>{errors.username}</Error>
@@ -75,7 +80,7 @@ export default () => {
                   type="password"
                   name="password"
                   component={MyInput}
-                  placeholder="Ex: demo"
+                  placeholder="demo"
                 />
                 {errors.password && touched.password && (
                   <Error>{errors.password}</Error>
