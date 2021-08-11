@@ -22,7 +22,7 @@ import "./theme/global.css";
 // import DemoSwitcher from 'components/DemoSwitcher/SwitcherBtn';
 
 const httpLink = new HttpLink({
-  uri: "http://ec2-13-233-179-86.ap-south-1.compute.amazonaws.com/custom/graphql"
+  uri: "https://ecommerce-backend.leafcraftstudios.com/custom/graphql"
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
