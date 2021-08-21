@@ -38,14 +38,10 @@ export default () => {
 
   let { from } = (location.state as any) || { from: { pathname: "/" } };
   let login = ({ username, password }, actions) => {
-    if (username === "staff@jxtapose.com" && password === "staff123") {
-      authenticate({ username, password }, () => {
-        history.replace(from);
-      });
-    } else {
-      actions.setSubmitting(false);
-      actions.resetForm();
-    }
+    console.log(username, password);
+    authenticate({ username, password }, () => {
+      history.replace(from);
+    });
   };
   return (
     <Wrapper>
