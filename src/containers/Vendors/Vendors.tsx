@@ -34,6 +34,7 @@ const GET_VENDORS = gql`
         slug
         email
         contact_number
+        pincode
         address
         previewUrl
         thumbnailUrl
@@ -156,13 +157,14 @@ export default function Vendors() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(270px, max-content) minmax(270px, max-content) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto)">
+              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(270px, max-content) minmax(270px, max-content) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
                 <StyledHeadCell>ID</StyledHeadCell>
                 <StyledHeadCell>Name</StyledHeadCell>
                 <StyledHeadCell>Email</StyledHeadCell>
                 <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Joining Date</StyledHeadCell>
                 <StyledHeadCell>Address</StyledHeadCell>
+                <StyledHeadCell>Pincode</StyledHeadCell>
 
                 {data ? (
                   data.vendors.items.length ? (
@@ -178,6 +180,7 @@ export default function Vendors() {
                           {dayjs(row["createdAt"]).format("DD MMM YYYY")}
                         </StyledBodyCell>
                         <StyledBodyCell>{row["address"]}</StyledBodyCell>
+                        <StyledBodyCell>{row["pincode"]}</StyledBodyCell>
                       </React.Fragment>
                     ))
                   ) : (

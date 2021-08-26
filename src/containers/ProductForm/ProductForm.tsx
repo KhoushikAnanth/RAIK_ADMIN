@@ -61,6 +61,7 @@ const GET_PRODUCTS = gql`
         type
         price
         unit
+        quantity
         salePrice
         discountInPercent
       }
@@ -170,7 +171,8 @@ const AddProduct: React.FC<Props> = (props) => {
       name: data.name,
       slug: data.slug,
       description: data.description,
-      images: fileURLs ? fileURLs : undefined,
+      defaultImageURL: fileURLs ? fileURLs[0] : undefined,
+      galleryURLs: fileURLs ? fileURLs : undefined,
       price: Number(data.price),
       // unit: data.unit,
       salePrice: Number(data.salePrice),
@@ -246,7 +248,7 @@ const AddProduct: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Name</FormLabel>
                   <Input
-                    inputRef={register({ required: true, maxLength: 20 })}
+                    inputRef={register({ required: true, maxLength: 25 })}
                     name="name"
                   />
                 </FormFields>

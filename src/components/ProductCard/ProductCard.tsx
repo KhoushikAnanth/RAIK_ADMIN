@@ -57,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <ProductCardWrapper
       {...props}
       className="product-card"
-      // onClick={openDrawer}
+      onClick={openDrawer}
     >
       <ProductImageWrapper>
         <Image url={image} className="product-image" />

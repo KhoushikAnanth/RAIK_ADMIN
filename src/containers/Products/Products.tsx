@@ -75,8 +75,11 @@ const GET_PRODUCTS = gql`
         type
         price
         unit
+        quantity
         salePrice
         discountInPercent
+        weightInGrams
+        slug
       }
       total
       hasMore

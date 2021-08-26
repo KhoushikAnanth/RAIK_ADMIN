@@ -46,6 +46,7 @@ const GET_VENDOR = gql`
         contact_number
         creation_date
         role
+        pincode
       }
       totalCount
       hasMore
@@ -153,6 +154,7 @@ const VendorsForm: React.FC<Props> = (props) => {
       categoryIDs: data.categories,
       description: description,
       promotion: data.promotion,
+      pincode: data.pincode,
       address: address,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -232,6 +234,14 @@ const VendorsForm: React.FC<Props> = (props) => {
                     onTextChange={(e) => setText(e.currentTarget.value)}
                     inputRef={register({ required: true })}
                     name="contact_number"
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Pincode</FormLabel>
+                  <Input
+                    inputRef={register({ required: true, maxLength: 6 })}
+                    name="pincode"
                   />
                 </FormFields>
 

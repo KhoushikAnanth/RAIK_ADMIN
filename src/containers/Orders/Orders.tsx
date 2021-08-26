@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
-import { styled, withStyle, createThemedUseStyletron } from 'baseui';
-import dayjs from 'dayjs';
-import { Grid, Row as Rows, Col as Column } from 'components/FlexBox/FlexBox';
-import Select from 'components/Select/Select';
-import Input from 'components/Input/Input';
+import React, { useState } from "react";
+import { styled, withStyle, createThemedUseStyletron } from "baseui";
+import dayjs from "dayjs";
+import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
+import Select from "components/Select/Select";
+import Input from "components/Input/Input";
 
-import { useQuery, gql } from '@apollo/client';
-import { Wrapper, Header, Heading } from 'components/Wrapper.style';
-import Checkbox from 'components/CheckBox/CheckBox';
+import { useQuery, gql } from "@apollo/client";
+import { Wrapper, Header, Heading } from "components/Wrapper.style";
+import Checkbox from "components/CheckBox/CheckBox";
 
 import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledCell,
-} from './Orders.style';
-import NoResult from 'components/NoResult/NoResult';
+  StyledCell
+} from "./Orders.style";
+import NoResult from "components/NoResult/NoResult";
 
 const GET_ORDERS = gql`
   query getOrders($status: String, $limit: Int, $searchText: String) {
-    orders(status: $status, limit: $limit, searchText: $searchText) {
-      id
-      customer_id
+    orders(
+      status: $status
+      limit: $limit
+      searchText: $searchText
+      organisationID: "610db2e716c19a36ccdde6e8"
+    ) {
+      _id
+      customer {
+        _id
+        name
+        primary_contact
+      }
       creation_date
       delivery_address
       amount
       payment_method
-      contact_number
-      status
     }
   }
 `;
@@ -35,54 +42,54 @@ const GET_ORDERS = gql`
 type CustomThemeT = { red400: string; textNormal: string; colors: any };
 const themedUseStyletron = createThemedUseStyletron<CustomThemeT>();
 
-const Status = styled('div', ({ $theme }) => ({
+const Status = styled("div", ({ $theme }) => ({
   ...$theme.typography.fontBold14,
   color: $theme.colors.textDark,
-  display: 'flex',
-  alignItems: 'center',
-  lineHeight: '1',
-  textTransform: 'capitalize',
+  display: "flex",
+  alignItems: "center",
+  lineHeight: "1",
+  textTransform: "capitalize",
 
-  ':before': {
+  ":before": {
     content: '""',
-    width: '10px',
-    height: '10px',
-    display: 'inline-block',
-    borderTopLeftRadius: '10px',
-    borderTopRightRadius: '10px',
-    borderBottomRightRadius: '10px',
-    borderBottomLeftRadius: '10px',
+    width: "10px",
+    height: "10px",
+    display: "inline-block",
+    borderTopLeftRadius: "10px",
+    borderTopRightRadius: "10px",
+    borderBottomRightRadius: "10px",
+    borderBottomLeftRadius: "10px",
     backgroundColor: $theme.borders.borderE6,
-    marginRight: '10px',
-  },
+    marginRight: "10px"
+  }
 }));
 
 const Col = withStyle(Column, () => ({
-  '@media only screen and (max-width: 767px)': {
-    marginBottom: '20px',
+  "@media only screen and (max-width: 767px)": {
+    marginBottom: "20px",
 
-    ':last-child': {
-      marginBottom: 0,
-    },
-  },
+    ":last-child": {
+      marginBottom: 0
+    }
+  }
 }));
 
 const Row = withStyle(Rows, () => ({
-  '@media only screen and (min-width: 768px)': {
-    alignItems: 'center',
-  },
+  "@media only screen and (min-width: 768px)": {
+    alignItems: "center"
+  }
 }));
 
 const statusSelectOptions = [
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'failed', label: 'Failed' },
+  { value: "delivered", label: "Delivered" },
+  { value: "pending", label: "Pending" },
+  { value: "processing", label: "Processing" },
+  { value: "failed", label: "Failed" }
 ];
 const limitSelectOptions = [
-  { value: 7, label: 'Last 7 orders' },
-  { value: 15, label: 'Last 15 orders' },
-  { value: 30, label: 'Last 30 orders' },
+  { value: 7, label: "Last 7 orders" },
+  { value: 15, label: "Last 15 orders" },
+  { value: 30, label: "Last 30 orders" }
 ];
 
 export default function Orders() {
@@ -91,28 +98,28 @@ export default function Orders() {
 
   const [useCss, theme] = themedUseStyletron();
   const sent = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.primary,
-    },
+      backgroundColor: theme.colors.primary
+    }
   });
   const failed = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.red400,
-    },
+      backgroundColor: theme.colors.red400
+    }
   });
   const processing = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.textNormal,
-    },
+      backgroundColor: theme.colors.textNormal
+    }
   });
   const paid = useCss({
-    ':before': {
+    ":before": {
       content: '""',
-      backgroundColor: theme.colors.blue400,
-    },
+      backgroundColor: theme.colors.blue400
+    }
   });
 
   const [status, setStatus] = useState([]);
@@ -129,7 +136,7 @@ export default function Orders() {
     if (value.length) {
       refetch({
         status: value[0].value,
-        limit: limit.length ? limit[0].value : null,
+        limit: limit.length ? limit[0].value : null
       });
     } else {
       refetch({ status: null });
@@ -141,11 +148,11 @@ export default function Orders() {
     if (value.length) {
       refetch({
         status: status.length ? status[0].value : null,
-        limit: value[0].value,
+        limit: value[0].value
       });
     } else {
       refetch({
-        limit: null,
+        limit: null
       });
     }
   }
@@ -179,7 +186,7 @@ export default function Orders() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: '0 0 8px rgba(0, 0 ,0, 0.1)',
+              boxShadow: "0 0 8px rgba(0, 0 ,0, 0.1)"
             }}
           >
             <Col md={3} xs={12}>
@@ -187,7 +194,7 @@ export default function Orders() {
             </Col>
 
             <Col md={9} xs={12}>
-              <Row>
+              {/* <Row>
                 <Col md={3} xs={12}>
                   <Select
                     options={statusSelectOptions}
@@ -220,11 +227,11 @@ export default function Orders() {
                     clearable
                   />
                 </Col>
-              </Row>
+              </Row> */}
             </Col>
           </Header>
 
-          <Wrapper style={{ boxShadow: '0 0 5px rgba(0, 0 , 0, 0.05)' }}>
+          <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
               <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
                 <StyledHeadCell>
@@ -236,16 +243,16 @@ export default function Orders() {
                     overrides={{
                       Checkmark: {
                         style: {
-                          borderTopWidth: '2px',
-                          borderRightWidth: '2px',
-                          borderBottomWidth: '2px',
-                          borderLeftWidth: '2px',
-                          borderTopLeftRadius: '4px',
-                          borderTopRightRadius: '4px',
-                          borderBottomRightRadius: '4px',
-                          borderBottomLeftRadius: '4px',
-                        },
-                      },
+                          borderTopWidth: "2px",
+                          borderRightWidth: "2px",
+                          borderBottomWidth: "2px",
+                          borderLeftWidth: "2px",
+                          borderTopLeftRadius: "4px",
+                          borderTopRightRadius: "4px",
+                          borderBottomRightRadius: "4px",
+                          borderBottomLeftRadius: "4px"
+                        }
+                      }
                     }}
                   />
                 </StyledHeadCell>
@@ -260,65 +267,63 @@ export default function Orders() {
 
                 {data ? (
                   data.orders.length ? (
-                    data.orders
-                      .map((item) => Object.values(item))
-                      .map((row, index) => (
-                        <React.Fragment key={index}>
-                          <StyledCell>
-                            <Checkbox
-                              name={row[1]}
-                              checked={checkedId.includes(row[1])}
-                              onChange={handleCheckbox}
-                              overrides={{
-                                Checkmark: {
-                                  style: {
-                                    borderTopWidth: '2px',
-                                    borderRightWidth: '2px',
-                                    borderBottomWidth: '2px',
-                                    borderLeftWidth: '2px',
-                                    borderTopLeftRadius: '4px',
-                                    borderTopRightRadius: '4px',
-                                    borderBottomRightRadius: '4px',
-                                    borderBottomLeftRadius: '4px',
-                                  },
-                                },
-                              }}
-                            />
-                          </StyledCell>
-                          <StyledCell>{row[1]}</StyledCell>
-                          <StyledCell>{row[2]}</StyledCell>
-                          <StyledCell>
-                            {dayjs(row[3]).format('DD MMM YYYY')}
-                          </StyledCell>
-                          <StyledCell>{row[4]}</StyledCell>
-                          <StyledCell>${row[5]}</StyledCell>
-                          <StyledCell>{row[6]}</StyledCell>
-                          <StyledCell>{row[7]}</StyledCell>
-                          <StyledCell style={{ justifyContent: 'center' }}>
-                            <Status
-                              className={
-                                row[8].toLowerCase() === 'delivered'
-                                  ? sent
-                                  : row[8].toLowerCase() === 'pending'
-                                  ? paid
-                                  : row[8].toLowerCase() === 'processing'
-                                  ? processing
-                                  : row[8].toLowerCase() === 'failed'
-                                  ? failed
-                                  : ''
+                    data.orders.map((row, index) => (
+                      <React.Fragment key={index}>
+                        <StyledCell>
+                          <Checkbox
+                            name={row["_id"]}
+                            checked={checkedId.includes(row[1])}
+                            onChange={handleCheckbox}
+                            overrides={{
+                              Checkmark: {
+                                style: {
+                                  borderTopWidth: "2px",
+                                  borderRightWidth: "2px",
+                                  borderBottomWidth: "2px",
+                                  borderLeftWidth: "2px",
+                                  borderTopLeftRadius: "4px",
+                                  borderTopRightRadius: "4px",
+                                  borderBottomRightRadius: "4px",
+                                  borderBottomLeftRadius: "4px"
+                                }
                               }
-                            >
-                              {row[8]}
-                            </Status>
-                          </StyledCell>
-                        </React.Fragment>
-                      ))
+                            }}
+                          />
+                        </StyledCell>
+                        <StyledCell>{row["_id"].slice(0, 6)}</StyledCell>
+                        <StyledCell>{row.customer.name}</StyledCell>
+                        <StyledCell>
+                          {dayjs(row["creation_date"]).format("DD MMM YYYY")}
+                        </StyledCell>
+                        <StyledCell>{row["delivery_address"]}</StyledCell>
+                        <StyledCell>${row["amount"]}</StyledCell>
+                        <StyledCell>{row["payment_method"]}</StyledCell>
+                        <StyledCell>{row.customer.primary_contact}</StyledCell>
+                        <StyledCell style={{ justifyContent: "center" }}>
+                          {/* <Status
+                            className={
+                              row[8].toLowerCase() === "delivered"
+                                ? sent
+                                : row[8].toLowerCase() === "pending"
+                                ? paid
+                                : row[8].toLowerCase() === "processing"
+                                ? processing
+                                : row[8].toLowerCase() === "failed"
+                                ? failed
+                                : ""
+                            }
+                          >
+                            {row[8]}
+                          </Status> */}
+                        </StyledCell>
+                      </React.Fragment>
+                    ))
                   ) : (
                     <NoResult
                       hideButton={false}
                       style={{
-                        gridColumnStart: '1',
-                        gridColumnEnd: 'one',
+                        gridColumnStart: "1",
+                        gridColumnEnd: "one"
                       }}
                     />
                   )
