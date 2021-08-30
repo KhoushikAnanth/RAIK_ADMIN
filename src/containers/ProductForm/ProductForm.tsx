@@ -100,6 +100,21 @@ const GET_CATEGORIES = gql`
   }
 `;
 
+const GET_VENDORS = gql`
+  query getVendors($type: String, $offset: Int) {
+    vendors(
+      type: $type
+      offset: $offset
+      organisationID: "610db2e716c19a36ccdde6e8"
+    ) {
+      items {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 type Props = any;
 
 const AddProduct: React.FC<Props> = (props) => {
@@ -111,6 +126,7 @@ const AddProduct: React.FC<Props> = (props) => {
   const { register, handleSubmit, setValue } = useForm();
   const [type, setType] = useState([]);
   const [tag, setTag] = useState([]);
+  const [vendorTag, setVendorTag] = useState([]);
   const [description, setDescription] = useState("");
   const [selectedFiles, setFiles] = useState();
 
@@ -129,8 +145,23 @@ const AddProduct: React.FC<Props> = (props) => {
     }
   }, [categoryData]);
 
+  const [vendorList, setVendorList] = useState();
+  const { data: vendorData, error: vendorsError } = useQuery(GET_VENDORS);
+
+  React.useEffect(() => {
+    if (vendorData) {
+      let temp = vendorData.vendors.items.map((vendor) => ({
+        value: vendor._id,
+        name: vendor.name,
+        id: vendor._id
+      }));
+      setVendorList(temp);
+    }
+  }, [vendorData]);
+
   React.useEffect(() => {
     register({ name: "categories" });
+    register({ name: "vendor" });
     register({ name: "images", required: true });
     register({ name: "description" });
   }, [register]);
@@ -143,9 +174,14 @@ const AddProduct: React.FC<Props> = (props) => {
 
   const [createProduct] = useMutation(CREATE_PRODUCT);
 
-  const handleMultiChange = ({ value }) => {
+  const handleCategoryChange = ({ value }) => {
     setValue("categories", value);
     setTag(value);
+  };
+
+  const handleVendorChange = ({ value }) => {
+    setValue("vendor", value);
+    setVendorTag(value);
   };
 
   const handleTypeChange = ({ value }) => {
@@ -162,10 +198,7 @@ const AddProduct: React.FC<Props> = (props) => {
   const onSubmit = async (data) => {
     let fileURLs = selectedFiles ? await UploadFiles(selectedFiles) : null;
 
-    console.log(data);
-
     let categoryIDs = data.categories.map((category: any) => category.id);
-    console.log(categoryIDs);
 
     const newProduct = {
       name: data.name,
@@ -181,6 +214,7 @@ const AddProduct: React.FC<Props> = (props) => {
       categoryIDs: categoryIDs,
       weightInGrams: Number(data.weightInGrams),
       creation_date: new Date(),
+      vendorID: data.vendor[0].id,
       organisationID: "610db2e716c19a36ccdde6e8"
     };
     console.log(newProduct, "newProduct data");
@@ -381,7 +415,7 @@ const AddProduct: React.FC<Props> = (props) => {
                     valueKey="value"
                     placeholder="Product Tag"
                     value={tag}
-                    onChange={handleMultiChange}
+                    onChange={handleCategoryChange}
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
@@ -410,6 +444,45 @@ const AddProduct: React.FC<Props> = (props) => {
                       }
                     }}
                     multi
+                  />
+                </FormFields>
+
+                <FormFields>
+                  <FormLabel>Vendor</FormLabel>
+                  <Select
+                    options={vendorList ? vendorList : {}}
+                    labelKey="name"
+                    valueKey="value"
+                    placeholder="Vendor Tag"
+                    value={vendorTag}
+                    onChange={handleVendorChange}
+                    overrides={{
+                      Placeholder: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal
+                          };
+                        }
+                      },
+                      DropdownListItem: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal
+                          };
+                        }
+                      },
+                      Popover: {
+                        props: {
+                          overrides: {
+                            Body: {
+                              style: { zIndex: 5 }
+                            }
+                          }
+                        }
+                      }
+                    }}
                   />
                 </FormFields>
               </DrawerBox>

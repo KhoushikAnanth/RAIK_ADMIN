@@ -8,6 +8,7 @@ import Input from "components/Input/Input";
 import { useQuery, gql } from "@apollo/client";
 import { Wrapper, Header, Heading } from "components/Wrapper.style";
 import Checkbox from "components/CheckBox/CheckBox";
+import { FaEye } from "react-icons/fa";
 
 import {
   TableWrapper,
@@ -16,6 +17,8 @@ import {
   StyledCell
 } from "./Orders.style";
 import NoResult from "components/NoResult/NoResult";
+import Button, { KIND, SIZE, SHAPE } from "components/Button/Button";
+import { useDrawerDispatch } from "context/DrawerContext";
 
 const GET_ORDERS = gql`
   query getOrders($status: String, $limit: Int, $searchText: String) {
@@ -35,6 +38,7 @@ const GET_ORDERS = gql`
       delivery_address
       amount
       payment_method
+      status
     }
   }
 `;
@@ -93,6 +97,18 @@ const limitSelectOptions = [
 ];
 
 export default function Orders() {
+  const dispatch = useDrawerDispatch();
+
+  const openDrawer = React.useCallback(
+    (data) =>
+      dispatch({
+        type: "OPEN_DRAWER",
+        drawerComponent: "ORDER_DETAILS",
+        data: data
+      }),
+    [dispatch]
+  );
+
   const [checkedId, setCheckedId] = useState([]);
   const [checked, setChecked] = useState(false);
 
@@ -233,8 +249,8 @@ export default function Orders() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
-                <StyledHeadCell>
+              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(70px, 100px)">
+                {/* <StyledHeadCell>
                   <Checkbox
                     type="checkbox"
                     value="checkAll"
@@ -255,21 +271,21 @@ export default function Orders() {
                       }
                     }}
                   />
-                </StyledHeadCell>
+                </StyledHeadCell> */}
                 <StyledHeadCell>ID</StyledHeadCell>
-                <StyledHeadCell>Customer ID</StyledHeadCell>
+                <StyledHeadCell>Customer Name</StyledHeadCell>
                 <StyledHeadCell>Time</StyledHeadCell>
                 <StyledHeadCell>Delivery Address</StyledHeadCell>
                 <StyledHeadCell>Amount</StyledHeadCell>
                 <StyledHeadCell>Payment Method</StyledHeadCell>
                 <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Status</StyledHeadCell>
-
+                <StyledHeadCell>View</StyledHeadCell>
                 {data ? (
                   data.orders.length ? (
                     data.orders.map((row, index) => (
                       <React.Fragment key={index}>
-                        <StyledCell>
+                        {/* <StyledCell>
                           <Checkbox
                             name={row["_id"]}
                             checked={checkedId.includes(row[1])}
@@ -289,32 +305,44 @@ export default function Orders() {
                               }
                             }}
                           />
-                        </StyledCell>
+                        </StyledCell> */}
                         <StyledCell>{row["_id"].slice(0, 6)}</StyledCell>
                         <StyledCell>{row.customer.name}</StyledCell>
                         <StyledCell>
                           {dayjs(row["creation_date"]).format("DD MMM YYYY")}
                         </StyledCell>
                         <StyledCell>{row["delivery_address"]}</StyledCell>
-                        <StyledCell>${row["amount"]}</StyledCell>
+                        <StyledCell>₹{row["amount"]}</StyledCell>
                         <StyledCell>{row["payment_method"]}</StyledCell>
                         <StyledCell>{row.customer.primary_contact}</StyledCell>
                         <StyledCell style={{ justifyContent: "center" }}>
-                          {/* <Status
+                          <Status
                             className={
-                              row[8].toLowerCase() === "delivered"
+                              row["status"].toLowerCase() === "delivered"
                                 ? sent
-                                : row[8].toLowerCase() === "pending"
+                                : row["status"].toLowerCase() === "pending"
                                 ? paid
-                                : row[8].toLowerCase() === "processing"
+                                : row["status"].toLowerCase() === "processing"
                                 ? processing
-                                : row[8].toLowerCase() === "failed"
+                                : row["status"].toLowerCase() === "failed"
                                 ? failed
                                 : ""
                             }
                           >
-                            {row[8]}
-                          </Status> */}
+                            {row["status"]}
+                          </Status>
+                        </StyledCell>
+                        <StyledCell>
+                          <Button
+                            kind={KIND.minimal}
+                            size={SIZE.compact}
+                            shape={SHAPE.round}
+                            onClick={() => {
+                              openDrawer(row);
+                            }}
+                          >
+                            <FaEye />
+                          </Button>
                         </StyledCell>
                       </React.Fragment>
                     ))

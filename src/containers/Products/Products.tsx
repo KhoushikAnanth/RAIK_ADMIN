@@ -80,6 +80,9 @@ const GET_PRODUCTS = gql`
         discountInPercent
         weightInGrams
         slug
+        vendor {
+          _id
+        }
       }
       total
       hasMore

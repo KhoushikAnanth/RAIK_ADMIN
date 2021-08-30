@@ -57,14 +57,14 @@ const sidebarMenus = [
     path: ORDERS,
     exact: false,
     icon: <OrderIcon />,
-    disabled: true
+    disabled: false
   },
   {
     name: "Customers",
     path: CUSTOMERS,
     exact: false,
     icon: <CustomerIcon />,
-    disabled: true
+    disabled: false
   },
   {
     name: "Coupons",

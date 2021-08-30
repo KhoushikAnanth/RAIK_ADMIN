@@ -104,6 +104,7 @@ const AddProduct: React.FC<Props> = () => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
+      vendorID: defaultData.vendor._id,
       organisationID: "610db2e716c19a36ccdde6e8"
     };
 
