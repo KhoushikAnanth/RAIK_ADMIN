@@ -1,39 +1,15 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-ecommercejxtapose-dev-184818-authRole",
-      "UnauthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommercejxtapose-dev-184818-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommercejxtapose-dev-184818-authRole",
+      "AuthRoleName": "amplify-ecommerceadmin-dev-205419-authRole",
+      "UnauthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommerceadmin-dev-205419-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommerceadmin-dev-205419-authRole",
       "Region": "ap-south-1",
-      "DeploymentBucketName": "amplify-ecommercejxtapose-dev-184818-deployment",
-      "UnauthRoleName": "amplify-ecommercejxtapose-dev-184818-unauthRole",
-      "StackName": "amplify-ecommercejxtapose-dev-184818",
-      "StackId": "arn:aws:cloudformation:ap-south-1:928917079510:stack/amplify-ecommercejxtapose-dev-184818/db0081b0-00ef-11ec-a4a6-0a8f1852746e",
-      "AmplifyAppId": "d3jkkcezxr8esx"
-    },
-    "categories": {
-      "auth": {
-        "ecommercejxtapose4ee1eb85": {}
-      }
-    }
-  },
-  "jxtadmin": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-ecommercejxtapose-jxtadmin-191847-authRole",
-      "UnauthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommercejxtapose-jxtadmin-191847-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::928917079510:role/amplify-ecommercejxtapose-jxtadmin-191847-authRole",
-      "Region": "ap-south-1",
-      "DeploymentBucketName": "amplify-ecommercejxtapose-jxtadmin-191847-deployment",
-      "UnauthRoleName": "amplify-ecommercejxtapose-jxtadmin-191847-unauthRole",
-      "StackName": "amplify-ecommercejxtapose-jxtadmin-191847",
-      "StackId": "arn:aws:cloudformation:ap-south-1:928917079510:stack/amplify-ecommercejxtapose-jxtadmin-191847/c191c0d0-08cf-11ec-bd14-063eb7819a7a",
-      "AmplifyAppId": "d1hrcwcn0hr6vj"
-    },
-    "categories": {
-      "auth": {
-        "ecommercejxtapose4ee1eb85": {},
-        "ecommercejxtapose0b07c76e": {}
-      }
+      "DeploymentBucketName": "amplify-ecommerceadmin-dev-205419-deployment",
+      "UnauthRoleName": "amplify-ecommerceadmin-dev-205419-unauthRole",
+      "StackName": "amplify-ecommerceadmin-dev-205419",
+      "StackId": "arn:aws:cloudformation:ap-south-1:928917079510:stack/amplify-ecommerceadmin-dev-205419/7b2c95a0-3027-11ec-b0e1-0a6cdaa7cb4c",
+      "AmplifyAppId": "d25x7rnyl2xb08"
     }
   }
 }

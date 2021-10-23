@@ -18,7 +18,7 @@ import {
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
-  ButtonGroup
+  ButtonGroup,
 } from "../DrawerItems/DrawerItems.style";
 import UploadFiles from "utilities/uploadFile";
 
@@ -32,31 +32,27 @@ const options = [
   { value: "Laptop bags", name: "Laptop bags", id: "7" },
   { value: "Women Dress", name: "Women Dress", id: "8" },
   { value: "Outer Wear", name: "Outer Wear", id: "9" },
-  { value: "Pants", name: "Pants", id: "10" }
+  { value: "Pants", name: "Pants", id: "10" },
 ];
 
 const typeOptions = [
   { value: "grocery", name: "Grocery", id: "1" },
   { value: "women-cloths", name: "Women Cloths", id: "2" },
   { value: "bags", name: "Bags", id: "3" },
-  { value: "makeup", name: "Makeup", id: "4" }
+  { value: "makeup", name: "Makeup", id: "4" },
 ];
+
 const GET_PRODUCTS = gql`
-  query getProducts(
-    $type: String
-    $sortByPrice: String
-    $searchText: String
-    $offset: Int
-  ) {
+  query getProducts($type: String, $offset: Int) {
     products(
       type: $type
-      sortByPrice: $sortByPrice
-      searchText: $searchText
       offset: $offset
+      organisationID: "610db2e716c19a36ccdde6e8"
     ) {
       items {
-        id
+        _id
         name
+        description
         image
         type
         price
@@ -64,12 +60,18 @@ const GET_PRODUCTS = gql`
         quantity
         salePrice
         discountInPercent
+        weightInGrams
+        slug
+        vendor {
+          _id
+        }
       }
-      totalCount
+      total
       hasMore
     }
   }
 `;
+
 const CREATE_PRODUCT = gql`
   mutation createProduct($product: AddProductInput!) {
     createProduct(productInput: $product) {
@@ -119,27 +121,28 @@ type Props = any;
 
 const AddProduct: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(
-    () => dispatch({ type: "CLOSE_DRAWER" }),
-    [dispatch]
-  );
+  const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
+    dispatch,
+  ]);
   const { register, handleSubmit, setValue } = useForm();
   const [type, setType] = useState([]);
   const [tag, setTag] = useState([]);
   const [vendorTag, setVendorTag] = useState([]);
+  const [productTag, setProductTag] = useState([]);
   const [description, setDescription] = useState("");
   const [selectedFiles, setFiles] = useState();
 
   const [categoryList, setCategoryList] = useState();
-  const { data: categoryData, error: categoriesError } =
-    useQuery(GET_CATEGORIES);
+  const { data: categoryData, error: categoriesError } = useQuery(
+    GET_CATEGORIES
+  );
 
   React.useEffect(() => {
     if (categoryData) {
       let temp = categoryData.categories.map((category) => ({
         value: category._id,
         name: category.name,
-        id: category._id
+        id: category._id,
       }));
       setCategoryList(temp);
     }
@@ -153,11 +156,26 @@ const AddProduct: React.FC<Props> = (props) => {
       let temp = vendorData.vendors.items.map((vendor) => ({
         value: vendor._id,
         name: vendor.name,
-        id: vendor._id
+        id: vendor._id,
       }));
       setVendorList(temp);
     }
   }, [vendorData]);
+
+  const [productList, setProductList] = useState();
+  const { data: productData, error: productsError } = useQuery(GET_PRODUCTS);
+
+
+  React.useEffect(() => {
+    if (productData) {
+      let temp = productData.products.items.map((product) => ({
+        value: product._id,
+        name: product.name,
+        id: product._id,
+      }));
+      setProductList(temp);
+    }
+  }, [productData]);
 
   React.useEffect(() => {
     register({ name: "categories" });
@@ -184,6 +202,11 @@ const AddProduct: React.FC<Props> = (props) => {
     setVendorTag(value);
   };
 
+  const handleProductChange = ({ value }) => {
+    setValue("products", value);
+    setProductTag(value);
+  };
+
   const handleTypeChange = ({ value }) => {
     setValue("type", value);
     setType(value);
@@ -199,6 +222,11 @@ const AddProduct: React.FC<Props> = (props) => {
     let fileURLs = selectedFiles ? await UploadFiles(selectedFiles) : null;
 
     let categoryIDs = data.categories.map((category: any) => category.id);
+    
+    let productIDs = data.products.map((product: any) => product.id)
+
+
+    
 
     const newProduct = {
       name: data.name,
@@ -212,14 +240,16 @@ const AddProduct: React.FC<Props> = (props) => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       categoryIDs: categoryIDs,
+      linkProducts: productIDs,
+      type: data.type,
       weightInGrams: Number(data.weightInGrams),
       creation_date: new Date(),
       vendorID: data.vendor[0].id,
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "610db2e716c19a36ccdde6e8",
     };
     console.log(newProduct, "newProduct data");
     createProduct({
-      variables: { product: newProduct }
+      variables: { product: newProduct },
     });
     closeDrawer();
   };
@@ -260,9 +290,9 @@ const AddProduct: React.FC<Props> = (props) => {
                       backgroundColor: "#ffffff",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center"
-                    }
-                  }
+                      justifyContent: "center",
+                    },
+                  },
                 }}
               >
                 <Uploader onChange={handleUploader} />
@@ -399,6 +429,11 @@ const AddProduct: React.FC<Props> = (props) => {
                 </FormFields> */}
 
                 <FormFields>
+                  <FormLabel>Type</FormLabel>
+                  <Input  inputRef={register} name="name" />
+                </FormFields>
+
+                <FormFields>
                   <FormLabel>Weight (In grams)</FormLabel>
                   <Input
                     type="number"
@@ -413,7 +448,7 @@ const AddProduct: React.FC<Props> = (props) => {
                     options={categoryList ? categoryList : {}}
                     labelKey="name"
                     valueKey="value"
-                    placeholder="Product Tag"
+                    placeholder="Category Tag"
                     value={tag}
                     onChange={handleCategoryChange}
                     overrides={{
@@ -421,27 +456,27 @@ const AddProduct: React.FC<Props> = (props) => {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal
+                            color: $theme.colors.textNormal,
                           };
-                        }
+                        },
                       },
                       DropdownListItem: {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal
+                            color: $theme.colors.textNormal,
                           };
-                        }
+                        },
                       },
                       Popover: {
                         props: {
                           overrides: {
                             Body: {
-                              style: { zIndex: 5 }
-                            }
-                          }
-                        }
-                      }
+                              style: { zIndex: 5 },
+                            },
+                          },
+                        },
+                      },
                     }}
                     multi
                   />
@@ -461,30 +496,70 @@ const AddProduct: React.FC<Props> = (props) => {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal
+                            color: $theme.colors.textNormal,
                           };
-                        }
+                        },
                       },
                       DropdownListItem: {
                         style: ({ $theme }) => {
                           return {
                             ...$theme.typography.fontBold14,
-                            color: $theme.colors.textNormal
+                            color: $theme.colors.textNormal,
                           };
-                        }
+                        },
                       },
                       Popover: {
                         props: {
                           overrides: {
                             Body: {
-                              style: { zIndex: 5 }
-                            }
-                          }
-                        }
-                      }
+                              style: { zIndex: 5 },
+                            },
+                          },
+                        },
+                      },
                     }}
                   />
                 </FormFields>
+                <FormFields>
+                  <FormLabel>Add-on's</FormLabel>
+                  <Select
+                    options={productList ? productList : {}}
+                    labelKey="name"
+                    valueKey="value"
+                    placeholder="Product Tag"
+                    value={productTag}
+                    onChange={handleProductChange}
+                    overrides={{
+                      Placeholder: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      DropdownListItem: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      Popover: {
+                        props: {
+                          overrides: {
+                            Body: {
+                              style: { zIndex: 5 },
+                            },
+                          },
+                        },
+                      },
+                    }}
+                    multi
+                  />
+                </FormFields>
+
               </DrawerBox>
             </Col>
           </Row>
@@ -503,9 +578,9 @@ const AddProduct: React.FC<Props> = (props) => {
                   borderBottomRightRadius: "3px",
                   borderBottomLeftRadius: "3px",
                   marginRight: "15px",
-                  color: $theme.colors.red400
-                })
-              }
+                  color: $theme.colors.red400,
+                }),
+              },
             }}
           >
             Cancel
@@ -520,9 +595,9 @@ const AddProduct: React.FC<Props> = (props) => {
                   borderTopLeftRadius: "3px",
                   borderTopRightRadius: "3px",
                   borderBottomRightRadius: "3px",
-                  borderBottomLeftRadius: "3px"
-                })
-              }
+                  borderBottomLeftRadius: "3px",
+                }),
+              },
             }}
           >
             Create Product

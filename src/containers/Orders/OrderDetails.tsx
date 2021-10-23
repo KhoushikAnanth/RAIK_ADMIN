@@ -11,17 +11,21 @@ import {
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
-  ButtonGroup
+  ButtonGroup,
 } from "../DrawerItems/DrawerItems.style";
+import { groupBy } from "../../utilities/group-by";
 
 const GET_ORDER_DETAILS = gql`
-  query ($orderID: String!) {
+  query($orderID: String!) {
     getOrderDetails(orderID: $orderID) {
       _id
       product {
         _id
         name
         price
+      }
+      vendor {
+        _id
       }
       status
       quantity
@@ -33,20 +37,23 @@ type Props = any;
 
 const OrderDetails: React.FC<Props> = (props) => {
   const dispatch = useDrawerDispatch();
-  const closeDrawer = useCallback(
-    () => dispatch({ type: "CLOSE_DRAWER" }),
-    [dispatch]
-  );
+  const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
+    dispatch,
+  ]);
 
-  const {
-    data: orderDetails,
-    error,
-    loading
-  } = useQuery(GET_ORDER_DETAILS, {
-    variables: { orderID: props.data._id }
+  const { data: orderDetails, error, loading } = useQuery(GET_ORDER_DETAILS, {
+    variables: { orderID: props.data._id },
   });
 
   console.log(orderDetails);
+
+  let ordersGrouped;
+
+  if (orderDetails && orderDetails.getOrderDetails) {
+    ordersGrouped = groupBy(orderDetails.getOrderDetails);
+  }
+
+  console.log(ordersGrouped, "group product");
 
   return (
     <>
@@ -77,7 +84,7 @@ const OrderDetails: React.FC<Props> = (props) => {
               </Row>
               {orderDetails &&
                 orderDetails.getOrderDetails.length &&
-                orderDetails.getOrderDetails.map((orderedProduct, index) => (
+                ordersGrouped.map((orderedProduct, index) => (
                   <Row>
                     <Col lg={4}>{orderedProduct.product.name}</Col>
                     <Col lg={4}>{orderedProduct.quantity}</Col>

@@ -147,6 +147,8 @@ export default function Orders() {
     return <div>Error! {error.message}</div>;
   }
 
+  console.log(data)
+
   function handleStatus({ value }) {
     setStatus(value);
     if (value.length) {
