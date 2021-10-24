@@ -20,7 +20,7 @@ const GET_CUSTOMERS = gql`
     customers(
       searchBy: $searchBy
       sortBy: $sortBy
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "61740991d5532f3a7d63d9e9"
     ) {
       _id
       primary_contact

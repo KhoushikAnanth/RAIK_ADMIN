@@ -47,7 +47,7 @@ const GET_PRODUCTS = gql`
     products(
       type: $type
       offset: $offset
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "61740991d5532f3a7d63d9e9"
     ) {
       items {
         _id
@@ -92,7 +92,7 @@ const CREATE_PRODUCT = gql`
 
 const GET_CATEGORIES = gql`
   query getCategories($type: String) {
-    categories(type: $type, organisationID: "610db2e716c19a36ccdde6e8") {
+    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9") {
       _id
       icon
       name
@@ -107,7 +107,7 @@ const GET_VENDORS = gql`
     vendors(
       type: $type
       offset: $offset
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "61740991d5532f3a7d63d9e9"
     ) {
       items {
         _id
@@ -207,11 +207,6 @@ const AddProduct: React.FC<Props> = (props) => {
     setProductTag(value);
   };
 
-  const handleTypeChange = ({ value }) => {
-    setValue("type", value);
-    setType(value);
-  };
-
   const handleUploader = (files) => {
     if (files.length) {
       setFiles(files);
@@ -245,7 +240,7 @@ const AddProduct: React.FC<Props> = (props) => {
       weightInGrams: Number(data.weightInGrams),
       creation_date: new Date(),
       vendorID: data.vendor[0].id,
-      organisationID: "610db2e716c19a36ccdde6e8",
+      organisationID: "61740991d5532f3a7d63d9e9",
     };
     console.log(newProduct, "newProduct data");
     createProduct({
@@ -430,7 +425,7 @@ const AddProduct: React.FC<Props> = (props) => {
 
                 <FormFields>
                   <FormLabel>Type</FormLabel>
-                  <Input  inputRef={register} name="name" />
+                  <Input  inputRef={register({ required: true })} name="name" />
                 </FormFields>
 
                 <FormFields>

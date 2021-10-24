@@ -26,7 +26,7 @@ const GET_VENDORS = gql`
     vendors(
       type: $type
       offset: $offset
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "61740991d5532f3a7d63d9e9"
     ) {
       items {
         _id

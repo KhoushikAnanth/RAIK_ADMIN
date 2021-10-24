@@ -105,7 +105,7 @@ const AddProduct: React.FC<Props> = () => {
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
       vendorID: defaultData.vendor._id,
-      organisationID: "610db2e716c19a36ccdde6e8"
+      organisationID: "61740991d5532f3a7d63d9e9"
     };
 
     console.log(updatedProduct);
