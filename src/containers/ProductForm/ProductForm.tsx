@@ -165,7 +165,6 @@ const AddProduct: React.FC<Props> = (props) => {
   const [productList, setProductList] = useState();
   const { data: productData, error: productsError } = useQuery(GET_PRODUCTS);
 
-
   React.useEffect(() => {
     if (productData) {
       let temp = productData.products.items.map((product) => ({
@@ -182,6 +181,7 @@ const AddProduct: React.FC<Props> = (props) => {
     register({ name: "vendor" });
     register({ name: "images", required: true });
     register({ name: "description" });
+    register({ name: "type", required: true });
   }, [register]);
 
   const handleDescriptionChange = (e) => {
@@ -217,11 +217,11 @@ const AddProduct: React.FC<Props> = (props) => {
     let fileURLs = selectedFiles ? await UploadFiles(selectedFiles) : null;
 
     let categoryIDs = data.categories.map((category: any) => category.id);
-    
-    let productIDs = data.products.map((product: any) => product.id)
 
-
-    
+    let productIDs;
+    if (data && data.products) {
+      productIDs = data.products.map((product: any) => product.id);
+    }
 
     const newProduct = {
       name: data.name,
@@ -425,7 +425,7 @@ const AddProduct: React.FC<Props> = (props) => {
 
                 <FormFields>
                   <FormLabel>Type</FormLabel>
-                  <Input  inputRef={register({ required: true })} name="name" />
+                  <Input inputRef={register({ required: true })} name="type" />
                 </FormFields>
 
                 <FormFields>
@@ -554,7 +554,6 @@ const AddProduct: React.FC<Props> = (props) => {
                     multi
                   />
                 </FormFields>
-
               </DrawerBox>
             </Col>
           </Row>
