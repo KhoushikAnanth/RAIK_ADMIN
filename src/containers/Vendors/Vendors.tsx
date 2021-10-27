@@ -9,7 +9,7 @@ import Button from "components/Button/Button";
 
 import { Plus } from "assets/icons/PlusMinus";
 
-import { useQuery, gql } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 
 import { Wrapper, Header, Heading } from "components/Wrapper.style";
 
@@ -17,7 +17,7 @@ import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledBodyCell
+  StyledBodyCell,
 } from "./Vendors.style";
 import NoResult from "components/NoResult/NoResult";
 
@@ -27,6 +27,7 @@ const GET_VENDORS = gql`
       type: $type
       offset: $offset
       organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
     ) {
       items {
         _id
@@ -41,7 +42,16 @@ const GET_VENDORS = gql`
         description
         createdAt
         updatedAt
+        published
       }
+    }
+  }
+`;
+
+const UPADATE_VISIBILITY = gql`
+  mutation vendorVisibility($vendorID: String!, $published: Boolean!) {
+    vendorVisibility(vendorID: $vendorID, published: $published) {
+        _id
     }
   }
 `;
@@ -51,22 +61,22 @@ const Col = withStyle(Column, () => ({
     marginBottom: "20px",
 
     ":last-child": {
-      marginBottom: 0
-    }
-  }
+      marginBottom: 0,
+    },
+  },
 }));
 
 const Row = withStyle(Rows, () => ({
   "@media only screen and (min-width: 768px)": {
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 const roleSelectOptions = [
   { value: "admin", label: "Admin" },
   { value: "manager", label: "Manager" },
   { value: "member", label: "Member" },
-  { value: "delivery boy", label: "Delivery boy" }
+  { value: "delivery boy", label: "Delivery boy" },
 ];
 
 export default function Vendors() {
@@ -80,6 +90,8 @@ export default function Vendors() {
   const [search, setSearch] = useState("");
 
   const { data, error, refetch } = useQuery(GET_VENDORS);
+  const [updateVisibility] = useMutation(UPADATE_VISIBILITY);
+
   if (error) {
     return <div>Error! {error.message}</div>;
   }
@@ -95,6 +107,15 @@ export default function Vendors() {
     setSearch(value);
   }
 
+
+  function handlePublish(vendor) {
+    console.log(vendor);
+    updateVisibility({
+      variables: { vendorID: vendor._id, published:!vendor.published }
+    });
+
+  }
+
   return (
     <Grid fluid={true}>
       <Row>
@@ -102,7 +123,7 @@ export default function Vendors() {
           <Header
             style={{
               marginBottom: 40,
-              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)"
+              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)",
             }}
           >
             <Col md={3} xs={12}>
@@ -143,9 +164,9 @@ export default function Vendors() {
                           borderTopLeftRadius: "3px",
                           borderTopRightRadius: "3px",
                           borderBottomLeftRadius: "3px",
-                          borderBottomRightRadius: "3px"
-                        })
-                      }
+                          borderBottomRightRadius: "3px",
+                        }),
+                      },
                     }}
                   >
                     Add Vendors
@@ -157,7 +178,7 @@ export default function Vendors() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(270px, max-content) minmax(270px, max-content) minmax(150px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
+              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(270px, max-content) minmax(270px, max-content) minmax(130px, max-content) minmax(130px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto)">
                 <StyledHeadCell>ID</StyledHeadCell>
                 <StyledHeadCell>Name</StyledHeadCell>
                 <StyledHeadCell>Email</StyledHeadCell>
@@ -165,6 +186,7 @@ export default function Vendors() {
                 <StyledHeadCell>Joining Date</StyledHeadCell>
                 <StyledHeadCell>Address</StyledHeadCell>
                 <StyledHeadCell>Pincode</StyledHeadCell>
+                <StyledHeadCell>status</StyledHeadCell>
 
                 {data ? (
                   data.vendors.items.length ? (
@@ -181,6 +203,26 @@ export default function Vendors() {
                         </StyledBodyCell>
                         <StyledBodyCell>{row["address"]}</StyledBodyCell>
                         <StyledBodyCell>{row["pincode"]}</StyledBodyCell>
+                        <StyledBodyCell>
+                          {" "}
+                          <Button
+                            onClick={() => handlePublish(row)}
+                            startEnhancer={() => <Plus />}
+                            overrides={{
+                              BaseButton: {
+                                style: () => ({
+                                  width: "100%",
+                                  borderTopLeftRadius: "3px",
+                                  borderTopRightRadius: "3px",
+                                  borderBottomLeftRadius: "3px",
+                                  borderBottomRightRadius: "3px",
+                                }),
+                              },
+                            }}
+                          >
+                            {row.published ? "Unpublish" : "Publish"}
+                          </Button>
+                        </StyledBodyCell>
                       </React.Fragment>
                     ))
                   ) : (
@@ -188,7 +230,7 @@ export default function Vendors() {
                       hideButton={false}
                       style={{
                         gridColumnStart: "1",
-                        gridColumnEnd: "one"
+                        gridColumnEnd: "one",
                       }}
                     />
                   )

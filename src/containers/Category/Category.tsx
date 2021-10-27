@@ -22,7 +22,7 @@ import Image from "components/Image/Image";
 
 const GET_CATEGORIES = gql`
   query getCategories($type: String) {
-    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9") {
+    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9", isAdmin:true) {
       _id
       icon
       name

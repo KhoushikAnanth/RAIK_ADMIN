@@ -125,7 +125,6 @@ const AddProduct: React.FC<Props> = (props) => {
     dispatch,
   ]);
   const { register, handleSubmit, setValue } = useForm();
-  const [type, setType] = useState([]);
   const [tag, setTag] = useState([]);
   const [vendorTag, setVendorTag] = useState([]);
   const [productTag, setProductTag] = useState([]);
@@ -178,10 +177,10 @@ const AddProduct: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     register({ name: "categories" });
+    register({name: "products"});
     register({ name: "vendor" });
     register({ name: "images", required: true });
     register({ name: "description" });
-    register({ name: "type", required: true });
   }, [register]);
 
   const handleDescriptionChange = (e) => {
@@ -203,6 +202,7 @@ const AddProduct: React.FC<Props> = (props) => {
   };
 
   const handleProductChange = ({ value }) => {
+    console.log("Product change - ", value);
     setValue("products", value);
     setProductTag(value);
   };
@@ -214,14 +214,13 @@ const AddProduct: React.FC<Props> = (props) => {
   };
 
   const onSubmit = async (data) => {
+    console.log(data);
     let fileURLs = selectedFiles ? await UploadFiles(selectedFiles) : null;
 
     let categoryIDs = data.categories.map((category: any) => category.id);
 
-    let productIDs;
-    if (data && data.products) {
-      productIDs = data.products.map((product: any) => product.id);
-    }
+    let productIDs = data.products.map((product: any) => product.id);
+      console.log("In if for linked products : ", productIDs);
 
     const newProduct = {
       name: data.name,
@@ -235,7 +234,7 @@ const AddProduct: React.FC<Props> = (props) => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       categoryIDs: categoryIDs,
-      linkProducts: productIDs,
+      linkedProductIDs: productIDs,
       type: data.type,
       weightInGrams: Number(data.weightInGrams),
       creation_date: new Date(),

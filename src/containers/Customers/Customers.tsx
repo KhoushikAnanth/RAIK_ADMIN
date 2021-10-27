@@ -23,7 +23,6 @@ const GET_CUSTOMERS = gql`
       organisationID: "61740991d5532f3a7d63d9e9"
     ) {
       _id
-      primary_contact
       name
       creation_date
       email

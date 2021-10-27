@@ -26,6 +26,7 @@ const GET_ORDER_DETAILS = gql`
       }
       vendor {
         _id
+        name
       }
       status
       quantity
@@ -47,13 +48,13 @@ const OrderDetails: React.FC<Props> = (props) => {
 
   console.log(orderDetails);
 
-  let ordersGrouped;
+  // let ordersGrouped;
 
-  if (orderDetails && orderDetails.getOrderDetails) {
-    ordersGrouped = groupBy(orderDetails.getOrderDetails);
-  }
+  // if (orderDetails && orderDetails.getOrderDetails) {
+  //   ordersGrouped = groupBy(orderDetails.getOrderDetails);
+  // }
 
-  console.log(ordersGrouped, "group product");
+  // console.log(ordersGrouped, "group product");
 
   return (
     <>
@@ -78,17 +79,20 @@ const OrderDetails: React.FC<Props> = (props) => {
           <Col lg={12}>
             <DrawerBox>
               <Row>
-                <Col lg={4}>Product Name</Col>
-                <Col lg={4}>Quantity</Col>
-                <Col lg={4}>Status</Col>
+                <Col lg={3}>Product Name</Col>
+                <Col lg={3}>Quantity</Col>
+                <Col lg={3}>Status</Col>
+                <Col lg={3}>Status</Col>
+
               </Row>
               {orderDetails &&
                 orderDetails.getOrderDetails.length &&
-                ordersGrouped.map((orderedProduct, index) => (
+                orderDetails.getOrderDetails.map((orderedProduct, index) => (
                   <Row>
-                    <Col lg={4}>{orderedProduct.product.name}</Col>
-                    <Col lg={4}>{orderedProduct.quantity}</Col>
-                    <Col lg={4}>{orderedProduct.status}</Col>
+                    <Col lg={3}>{orderedProduct.product.name}</Col>
+                    <Col lg={3}>{orderedProduct.quantity}</Col>
+                    <Col lg={3}>{orderedProduct.status}</Col>
+                    <Col lg={3}>{orderedProduct.vendor.name}</Col>
                   </Row>
                 ))}
             </DrawerBox>

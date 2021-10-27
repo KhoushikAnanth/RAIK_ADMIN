@@ -38,7 +38,7 @@ const GET_CATEGORIES = gql`
 
 const GET_VENDOR = gql`
   query getVendor($role: String, $searchBy: String) {
-    vendors(role: $role, searchBy: $searchBy) {
+    vendors(role: $role, searchBy: $searchBy, isAdmin:true) {
       items {
         _id
         name
@@ -158,7 +158,8 @@ const VendorsForm: React.FC<Props> = (props) => {
       address: address,
       createdAt: new Date(),
       updatedAt: new Date(),
-      organisationID: "61740991d5532f3a7d63d9e9"
+      organisationID: "61740991d5532f3a7d63d9e9",
+      published: false
     };
     console.log(newVendor);
     addVendor({

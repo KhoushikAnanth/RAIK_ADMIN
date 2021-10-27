@@ -32,10 +32,9 @@ const GET_ORDERS = gql`
       customer {
         _id
         name
-        primary_contact
       }
       creation_date
-      delivery_address
+      type_address
       amount
       payment_method
       status
