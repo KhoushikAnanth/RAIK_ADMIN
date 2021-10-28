@@ -5,7 +5,7 @@ import { Grid, Row as Rows, Col as Column } from "components/FlexBox/FlexBox";
 import Select from "components/Select/Select";
 import Input from "components/Input/Input";
 
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useLazyQuery } from "@apollo/client";
 import { Wrapper, Header, Heading } from "components/Wrapper.style";
 import Checkbox from "components/CheckBox/CheckBox";
 import { FaEye } from "react-icons/fa";
@@ -14,7 +14,7 @@ import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledCell
+  StyledCell,
 } from "./Orders.style";
 import NoResult from "components/NoResult/NoResult";
 import Button, { KIND, SIZE, SHAPE } from "components/Button/Button";
@@ -34,10 +34,29 @@ const GET_ORDERS = gql`
         name
       }
       creation_date
-      type_address
+      address
+      contact_number
+      pincode
       amount
       payment_method
       status
+    }
+  }
+`;
+
+const GET_CUSTOMER = gql`
+  query customer($id: String) {
+    customer(id: $id) {
+      _id
+      contacts {
+        type
+        number
+      }
+      addresses {
+        name
+        address
+        pincode
+      }
     }
   }
 `;
@@ -63,8 +82,8 @@ const Status = styled("div", ({ $theme }) => ({
     borderBottomRightRadius: "10px",
     borderBottomLeftRadius: "10px",
     backgroundColor: $theme.borders.borderE6,
-    marginRight: "10px"
-  }
+    marginRight: "10px",
+  },
 }));
 
 const Col = withStyle(Column, () => ({
@@ -72,28 +91,16 @@ const Col = withStyle(Column, () => ({
     marginBottom: "20px",
 
     ":last-child": {
-      marginBottom: 0
-    }
-  }
+      marginBottom: 0,
+    },
+  },
 }));
 
 const Row = withStyle(Rows, () => ({
   "@media only screen and (min-width: 768px)": {
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
-
-const statusSelectOptions = [
-  { value: "delivered", label: "Delivered" },
-  { value: "pending", label: "Pending" },
-  { value: "processing", label: "Processing" },
-  { value: "failed", label: "Failed" }
-];
-const limitSelectOptions = [
-  { value: 7, label: "Last 7 orders" },
-  { value: 15, label: "Last 15 orders" },
-  { value: 30, label: "Last 30 orders" }
-];
 
 export default function Orders() {
   const dispatch = useDrawerDispatch();
@@ -103,7 +110,7 @@ export default function Orders() {
       dispatch({
         type: "OPEN_DRAWER",
         drawerComponent: "ORDER_DETAILS",
-        data: data
+        data: data,
       }),
     [dispatch]
   );
@@ -115,26 +122,26 @@ export default function Orders() {
   const sent = useCss({
     ":before": {
       content: '""',
-      backgroundColor: theme.colors.primary
-    }
+      backgroundColor: theme.colors.primary,
+    },
   });
   const failed = useCss({
     ":before": {
       content: '""',
-      backgroundColor: theme.colors.red400
-    }
+      backgroundColor: theme.colors.red400,
+    },
   });
   const processing = useCss({
     ":before": {
       content: '""',
-      backgroundColor: theme.colors.textNormal
-    }
+      backgroundColor: theme.colors.textNormal,
+    },
   });
   const paid = useCss({
     ":before": {
       content: '""',
-      backgroundColor: theme.colors.blue400
-    }
+      backgroundColor: theme.colors.blue400,
+    },
   });
 
   const [status, setStatus] = useState([]);
@@ -142,18 +149,19 @@ export default function Orders() {
   const [search, setSearch] = useState([]);
 
   const { data, error, refetch } = useQuery(GET_ORDERS);
+
   if (error) {
     return <div>Error! {error.message}</div>;
   }
 
-  console.log(data)
+  console.log(data);
 
   function handleStatus({ value }) {
     setStatus(value);
     if (value.length) {
       refetch({
         status: value[0].value,
-        limit: limit.length ? limit[0].value : null
+        limit: limit.length ? limit[0].value : null,
       });
     } else {
       refetch({ status: null });
@@ -165,11 +173,11 @@ export default function Orders() {
     if (value.length) {
       refetch({
         status: status.length ? status[0].value : null,
-        limit: value[0].value
+        limit: value[0].value,
       });
     } else {
       refetch({
-        limit: null
+        limit: null,
       });
     }
   }
@@ -203,7 +211,7 @@ export default function Orders() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: "0 0 8px rgba(0, 0 ,0, 0.1)"
+              boxShadow: "0 0 8px rgba(0, 0 ,0, 0.1)",
             }}
           >
             <Col md={3} xs={12}>
@@ -250,7 +258,7 @@ export default function Orders() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(70px, 100px)">
+              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(70px, 100px)  minmax(70px, 100px)">
                 {/* <StyledHeadCell>
                   <Checkbox
                     type="checkbox"
@@ -277,9 +285,10 @@ export default function Orders() {
                 <StyledHeadCell>Customer Name</StyledHeadCell>
                 <StyledHeadCell>Time</StyledHeadCell>
                 <StyledHeadCell>Delivery Address</StyledHeadCell>
+                <StyledHeadCell>Pincode</StyledHeadCell>
+                <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Amount</StyledHeadCell>
                 <StyledHeadCell>Payment Method</StyledHeadCell>
-                <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Status</StyledHeadCell>
                 <StyledHeadCell>View</StyledHeadCell>
                 {data ? (
@@ -312,10 +321,11 @@ export default function Orders() {
                         <StyledCell>
                           {dayjs(row["creation_date"]).format("DD MMM YYYY")}
                         </StyledCell>
-                        <StyledCell>{row["delivery_address"]}</StyledCell>
+                        <StyledCell>{row["address"]}</StyledCell>
+                        <StyledCell>{row["pincode"]}</StyledCell>
+                        <StyledCell>{row["contact_number"]}</StyledCell>
                         <StyledCell>₹{row["amount"]}</StyledCell>
                         <StyledCell>{row["payment_method"]}</StyledCell>
-                        <StyledCell>{row.customer.primary_contact}</StyledCell>
                         <StyledCell style={{ justifyContent: "center" }}>
                           <Status
                             className={
@@ -352,7 +362,7 @@ export default function Orders() {
                       hideButton={false}
                       style={{
                         gridColumnStart: "1",
-                        gridColumnEnd: "one"
+                        gridColumnEnd: "one",
                       }}
                     />
                   )
