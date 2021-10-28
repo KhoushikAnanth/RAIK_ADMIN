@@ -81,7 +81,7 @@ const sidebarMenus = [
     disabled: false
   },
   {
-    name: "Vendors",
+    name: "Menu",
     path: VENDORS,
     exact: false,
     icon: <CustomerIcon />,

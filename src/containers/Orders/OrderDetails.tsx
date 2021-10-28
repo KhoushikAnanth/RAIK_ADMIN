@@ -82,7 +82,7 @@ const OrderDetails: React.FC<Props> = (props) => {
                 <Col lg={3}>Product Name</Col>
                 <Col lg={3}>Quantity</Col>
                 <Col lg={3}>Status</Col>
-                <Col lg={3}>Status</Col>
+                <Col lg={3}>Vendor</Col>
 
               </Row>
               {orderDetails &&
