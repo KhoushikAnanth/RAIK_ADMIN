@@ -48,6 +48,7 @@ const GET_PRODUCTS = gql`
       type: $type
       offset: $offset
       organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
     ) {
       items {
         _id
@@ -92,7 +93,11 @@ const CREATE_PRODUCT = gql`
 
 const GET_CATEGORIES = gql`
   query getCategories($type: String) {
-    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9", isAdmin:true) {
+    categories(
+      type: $type
+      organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
+    ) {
       _id
       icon
       name
@@ -107,8 +112,8 @@ const GET_VENDORS = gql`
     vendors(
       type: $type
       offset: $offset
-      organisationID: "61740991d5532f3a7d63d9e9",
-      isAdmin:true
+      organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
     ) {
       items {
         _id
@@ -178,7 +183,7 @@ const AddProduct: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     register({ name: "categories" });
-    register({name: "products"});
+    register({ name: "products" });
     register({ name: "vendor" });
     register({ name: "images", required: true });
     register({ name: "description" });
@@ -221,7 +226,7 @@ const AddProduct: React.FC<Props> = (props) => {
     let categoryIDs = data.categories.map((category: any) => category.id);
 
     let productIDs = data.products.map((product: any) => product.id);
-      console.log("In if for linked products : ", productIDs);
+    console.log("In if for linked products : ", productIDs);
 
     const newProduct = {
       name: data.name,
