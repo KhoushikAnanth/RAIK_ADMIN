@@ -225,8 +225,11 @@ const AddProduct: React.FC<Props> = (props) => {
 
     let categoryIDs = data.categories.map((category: any) => category.id);
 
-    let productIDs = data.products.map((product: any) => product.id);
-    console.log("In if for linked products : ", productIDs);
+    let productIDs;
+    if (data.products) {
+      productIDs = data.products.map((product: any) => product.id);
+      console.log("In if for linked products : ", productIDs);
+    }
 
     const newProduct = {
       name: data.name,
