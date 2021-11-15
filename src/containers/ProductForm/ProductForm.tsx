@@ -486,7 +486,7 @@ const AddProduct: React.FC<Props> = (props) => {
                 </FormFields>
 
                 <FormFields>
-                  <FormLabel>Vendor</FormLabel>
+                  <FormLabel>Menu</FormLabel>
                   <Select
                     options={vendorList ? vendorList : {}}
                     labelKey="name"

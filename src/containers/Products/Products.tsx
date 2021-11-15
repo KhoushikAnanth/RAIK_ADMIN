@@ -67,6 +67,7 @@ const GET_PRODUCTS = gql`
       offset: $offset
       organisationID: "61740991d5532f3a7d63d9e9",
       isAdmin:true
+      isAllowed: true
     ) {
       items {
         _id
@@ -83,6 +84,7 @@ const GET_PRODUCTS = gql`
         slug
         vendor {
           _id
+          name
         }
       }
       total

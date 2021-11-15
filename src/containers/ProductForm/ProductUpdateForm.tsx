@@ -10,16 +10,17 @@ import Input from "components/Input/Input";
 import { Textarea } from "components/Textarea/Textarea";
 import Select from "components/Select/Select";
 import { FormFields, FormLabel } from "components/FormFields/FormFields";
+import { Plus } from "assets/icons/PlusMinus";
 
 import {
   Form,
   DrawerTitleWrapper,
   DrawerTitle,
   FieldDetails,
-  ButtonGroup
+  ButtonGroup,
 } from "../DrawerItems/DrawerItems.style";
 import UploadFiles from "utilities/uploadFile";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 type Props = any;
 
@@ -41,17 +42,39 @@ const UPDATE_PRODUCT = gql`
   }
 `;
 
+const GET_VENDORS = gql`
+  query getVendors($type: String, $offset: Int) {
+    vendors(
+      type: $type
+      offset: $offset
+      organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
+    ) {
+      items {
+        _id
+        name
+      }
+    }
+  }
+`;
+const UPADATE_VISIBILITY = gql`
+  mutation vendorVisibility($vendorID: String!, $published: Boolean!) {
+    vendorVisibility(vendorID: $vendorID, published: $published) {
+      _id
+    }
+  }
+`;
+
 const AddProduct: React.FC<Props> = () => {
   const dispatch = useDrawerDispatch();
   const defaultData = useDrawerState("data");
-  const closeDrawer = useCallback(
-    () => dispatch({ type: "CLOSE_DRAWER" }),
-    [dispatch]
-  );
+  const closeDrawer = useCallback(() => dispatch({ type: "CLOSE_DRAWER" }), [
+    dispatch,
+  ]);
   const { register, handleSubmit, setValue } = useForm({
-    defaultValues: defaultData
+    defaultValues: defaultData,
   });
-  const [type, setType] = useState([{ value: defaultData.type }]);
+  // const [type, setType] = useState([{ value: defaultData.type }]);
   const [tag, setTag] = useState([]);
   const [description, setDescription] = useState(defaultData.description);
   const [selectedFiles, setFiles] = useState(null);
@@ -63,7 +86,25 @@ const AddProduct: React.FC<Props> = () => {
     register({ name: "categories" });
     register({ name: "image" });
     register({ name: "description" });
+    register({ name: "vendor" });
   }, [register]);
+
+  const [vendorTag, setVendorTag] = useState([]);
+
+  const [vendorList, setVendorList] = useState();
+  const { data: vendorData, error: vendorsError } = useQuery(GET_VENDORS);
+  const [updateVisibility] = useMutation(UPADATE_VISIBILITY);
+
+  React.useEffect(() => {
+    if (vendorData) {
+      let temp = vendorData.vendors.items.map((vendor) => ({
+        value: vendor._id,
+        name: vendor.name,
+        id: vendor._id,
+      }));
+      setVendorList(temp);
+    }
+  }, [vendorData]);
 
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
 
@@ -77,14 +118,18 @@ const AddProduct: React.FC<Props> = () => {
     setDescription(value);
   };
 
-  const handleTypeChange = ({ value }) => {
-    setValue("type", value);
-    setType(value);
-  };
+  // const handleTypeChange = ({ value }) => {
+  //   setValue("type", value);
+  //   setType(value);
+  // };
   const handleUploader = (files) => {
     if (files.length) {
       setFiles(files[0]);
     }
+  };
+  const handleVendorChange = ({ value }) => {
+    setValue("vendor", value);
+    setVendorTag(value);
   };
   const onSubmit = async (data) => {
     let fileURL = data.image;
@@ -93,19 +138,23 @@ const AddProduct: React.FC<Props> = () => {
       fileURL = fileURL[0];
     }
 
+    console.log(data, "after changing the values");
+
     const updatedProduct = {
       productID: defaultData._id,
       name: data.name,
       slug: defaultData.slug,
       description: data.description,
+      type: defaultData.type,
       defaultImageURL: fileURL,
       price: Number(data.price),
       salePrice: Number(data.salePrice),
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
-      vendorID: defaultData.vendor._id,
-      organisationID: "61740991d5532f3a7d63d9e9"
+      vendorID: data.vendor[0].id,
+      organisationID: "61740991d5532f3a7d63d9e9",
+      // published: !data.published,
     };
 
     console.log(updatedProduct);
@@ -316,6 +365,44 @@ const AddProduct: React.FC<Props> = () => {
                     multi
                   />
                 </FormFields> */}
+                <FormFields>
+                  <FormLabel>Menu</FormLabel>
+                  <Select
+                    options={vendorList ? vendorList : {}}
+                    labelKey="name"
+                    valueKey="value"
+                    placeholder="Menu Tag"
+                    value={vendorTag}
+                    onChange={handleVendorChange}
+                    overrides={{
+                      Placeholder: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      DropdownListItem: {
+                        style: ({ $theme }) => {
+                          return {
+                            ...$theme.typography.fontBold14,
+                            color: $theme.colors.textNormal,
+                          };
+                        },
+                      },
+                      Popover: {
+                        props: {
+                          overrides: {
+                            Body: {
+                              style: { zIndex: 5 },
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </FormFields>
               </DrawerBox>
             </Col>
           </Row>
@@ -328,15 +415,15 @@ const AddProduct: React.FC<Props> = () => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: "50%",
+                  width: "40%",
                   borderTopLeftRadius: "3px",
                   borderTopRightRadius: "3px",
                   borderBottomRightRadius: "3px",
                   borderBottomLeftRadius: "3px",
                   marginRight: "15px",
-                  color: $theme.colors.red400
-                })
-              }
+                  color: $theme.colors.red400,
+                }),
+              },
             }}
           >
             Cancel
@@ -347,16 +434,34 @@ const AddProduct: React.FC<Props> = () => {
             overrides={{
               BaseButton: {
                 style: ({ $theme }) => ({
-                  width: "50%",
+                  width: "40%",
                   borderTopLeftRadius: "3px",
                   borderTopRightRadius: "3px",
                   borderBottomRightRadius: "3px",
-                  borderBottomLeftRadius: "3px"
-                })
-              }
+                  borderBottomLeftRadius: "3px",
+                  marginRight: "15px",
+                }),
+              },
             }}
           >
             Update Product
+          </Button>
+          <Button
+            onClick={() => handleSubmit(onSubmit)}
+            overrides={{
+              BaseButton: {
+                style: () => ({
+                  width: "20%",
+                  borderTopLeftRadius: "3px",
+                  borderTopRightRadius: "3px",
+                  borderBottomLeftRadius: "3px",
+                  borderBottomRightRadius: "3px",
+                  marginRight: "15px",
+                }),
+              },
+            }}
+          >
+            {onSubmit ? "Delete" : "Publish"}
           </Button>
         </ButtonGroup>
       </Form>
