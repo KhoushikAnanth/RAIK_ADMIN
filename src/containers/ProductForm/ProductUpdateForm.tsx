@@ -79,7 +79,7 @@ const AddProduct: React.FC<Props> = () => {
   const [description, setDescription] = useState(defaultData.description);
   const [selectedFiles, setFiles] = useState(null);
 
-  console.log(defaultData);
+  console.log("Default Data", defaultData);
 
   React.useEffect(() => {
     register({ name: "type" });
@@ -89,11 +89,10 @@ const AddProduct: React.FC<Props> = () => {
     register({ name: "vendor" });
   }, [register]);
 
-  const [vendorTags, setVendorTags] = useState(defaultData.vendor);
-  // console.log(vendorTags);
+  const [vendorTag, setVendorTag] = useState([]);
 
-  // const [vendorTag, setVendorTag] = useState(defaultData.vendor);
-  // console.log(vendorTag);
+  const [vendorTags, setVendorTags] = useState(defaultData.vendor);
+  console.log("Def Vendor Tags IVI", vendorTags);
 
   const [vendorList, setVendorList] = useState();
   const { data: vendorData, error: vendorsError } = useQuery(GET_VENDORS);
@@ -109,8 +108,6 @@ const AddProduct: React.FC<Props> = () => {
       setVendorList(temp);
     }
   }, [vendorData]);
-
-  // console.log(vendorList);
 
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
 
@@ -133,13 +130,10 @@ const AddProduct: React.FC<Props> = () => {
       setFiles(files[0]);
     }
   };
-  // const handleVendorChange = ({ value }) => {
-  //   setValue("vendor", value);
-  //   setVendorTag(value);
-  // };
-
-  const handleVendorsChange = (value) => {
-    setVendorTags(value.option);
+  const handleVendorChange = ({ value }) => {
+    setValue("vendor", value);
+    setVendorTag(value);
+    setVendorTags([value[0]][0]);
   };
   const onSubmit = async (data) => {
     let fileURL = data.image;
@@ -148,7 +142,7 @@ const AddProduct: React.FC<Props> = () => {
       fileURL = fileURL[0];
     }
 
-    // console.log(data, "after changing the values");
+    console.log("after changing the values", data);
 
     const updatedProduct = {
       productID: defaultData._id,
@@ -162,13 +156,12 @@ const AddProduct: React.FC<Props> = () => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
-      vendorID: data.vendor,
+      vendorID: data.vendor[0].id,
       organisationID: "61740991d5532f3a7d63d9e9",
-      isallowed: !data.published,
+      // published: !data.published,
     };
 
-    console.log(updatedProduct);
-
+    console.log("Updated Product", updatedProduct);
     updateProduct({ variables: { product: updatedProduct } });
 
     closeDrawer();
@@ -232,7 +225,6 @@ const AddProduct: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
-                    placeholder="Hello"
                     value={description}
                     onChange={handleDescriptionChange}
                   />
@@ -377,16 +369,15 @@ const AddProduct: React.FC<Props> = () => {
                     multi
                   />
                 </FormFields> */}
-
                 <FormFields>
                   <FormLabel>Menu</FormLabel>
                   <Select
                     options={vendorList ? vendorList : {}}
                     labelKey="name"
                     valueKey="value"
-                    placeholder={""}
-                    value={vendorTags}
-                    onChange={handleVendorsChange}
+                    placeholder=""
+                    value={[vendorTags]}
+                    onChange={handleVendorChange}
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
