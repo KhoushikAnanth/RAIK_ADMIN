@@ -104,6 +104,7 @@ const AddProduct: React.FC<Props> = () => {
         value: vendor._id,
         name: vendor.name,
         id: vendor._id,
+        _id: vendor._id,
       }));
       setVendorList(temp);
     }
@@ -156,9 +157,9 @@ const AddProduct: React.FC<Props> = () => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
-      vendorID: data.vendor[0].id,
+      vendorID: vendorTags._id,
       organisationID: "61740991d5532f3a7d63d9e9",
-      // published: !data.published,
+      published: !data.published,
     };
 
     console.log("Updated Product", updatedProduct);
