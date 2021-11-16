@@ -89,7 +89,11 @@ const AddProduct: React.FC<Props> = () => {
     register({ name: "vendor" });
   }, [register]);
 
-  const [vendorTag, setVendorTag] = useState([]);
+  const [vendorTags, setVendorTags] = useState(defaultData.vendor);
+  // console.log(vendorTags);
+
+  // const [vendorTag, setVendorTag] = useState(defaultData.vendor);
+  // console.log(vendorTag);
 
   const [vendorList, setVendorList] = useState();
   const { data: vendorData, error: vendorsError } = useQuery(GET_VENDORS);
@@ -105,6 +109,8 @@ const AddProduct: React.FC<Props> = () => {
       setVendorList(temp);
     }
   }, [vendorData]);
+
+  // console.log(vendorList);
 
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
 
@@ -127,9 +133,13 @@ const AddProduct: React.FC<Props> = () => {
       setFiles(files[0]);
     }
   };
-  const handleVendorChange = ({ value }) => {
-    setValue("vendor", value);
-    setVendorTag(value);
+  // const handleVendorChange = ({ value }) => {
+  //   setValue("vendor", value);
+  //   setVendorTag(value);
+  // };
+
+  const handleVendorsChange = (value) => {
+    setVendorTags(value.option);
   };
   const onSubmit = async (data) => {
     let fileURL = data.image;
@@ -138,7 +148,7 @@ const AddProduct: React.FC<Props> = () => {
       fileURL = fileURL[0];
     }
 
-    console.log(data, "after changing the values");
+    // console.log(data, "after changing the values");
 
     const updatedProduct = {
       productID: defaultData._id,
@@ -152,12 +162,13 @@ const AddProduct: React.FC<Props> = () => {
       discountInPercent: Number(data.discountInPercent),
       quantity: Number(data.quantity),
       weightInGrams: Number(data.weightInGrams),
-      vendorID: data.vendor[0].id,
+      vendorID: data.vendor,
       organisationID: "61740991d5532f3a7d63d9e9",
-      // published: !data.published,
+      isallowed: !data.published,
     };
 
     console.log(updatedProduct);
+
     updateProduct({ variables: { product: updatedProduct } });
 
     closeDrawer();
@@ -221,6 +232,7 @@ const AddProduct: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
+                    placeholder="Hello"
                     value={description}
                     onChange={handleDescriptionChange}
                   />
@@ -365,15 +377,16 @@ const AddProduct: React.FC<Props> = () => {
                     multi
                   />
                 </FormFields> */}
+
                 <FormFields>
                   <FormLabel>Menu</FormLabel>
                   <Select
                     options={vendorList ? vendorList : {}}
                     labelKey="name"
                     valueKey="value"
-                    placeholder="Menu Tag"
-                    value={vendorTag}
-                    onChange={handleVendorChange}
+                    placeholder={""}
+                    value={vendorTags}
+                    onChange={handleVendorsChange}
                     overrides={{
                       Placeholder: {
                         style: ({ $theme }) => {
