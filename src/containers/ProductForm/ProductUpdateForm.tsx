@@ -90,6 +90,7 @@ const AddProduct: React.FC<Props> = () => {
   }, [register]);
 
   const [vendorTag, setVendorTag] = useState([]);
+  const [publish, setpublish] = useState(true);
 
   const [vendorTags, setVendorTags] = useState(defaultData.vendor);
   console.log("Def Vendor Tags IVI", vendorTags);
@@ -120,6 +121,10 @@ const AddProduct: React.FC<Props> = () => {
     const value = e.target.value;
     setValue("description", value);
     setDescription(value);
+  };
+
+  const handleDelete = () => {
+    setpublish(false);
   };
 
   // const handleTypeChange = ({ value }) => {
@@ -159,7 +164,7 @@ const AddProduct: React.FC<Props> = () => {
       weightInGrams: Number(data.weightInGrams),
       vendorID: vendorTags._id,
       organisationID: "61740991d5532f3a7d63d9e9",
-      published: !data.published,
+      published: publish,
     };
 
     console.log("Updated Product", updatedProduct);
@@ -452,7 +457,7 @@ const AddProduct: React.FC<Props> = () => {
             Update Product
           </Button>
           <Button
-            onClick={() => handleSubmit(onSubmit)}
+            onClick={() => handleDelete()}
             overrides={{
               BaseButton: {
                 style: () => ({
