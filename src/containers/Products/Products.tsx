@@ -23,8 +23,8 @@ export const ProductsRow = styled("div", ({ $theme }) => ({
   "@media only screen and (max-width: 767px)": {
     marginLeft: "-7.5px",
     marginRight: "-7.5px",
-    marginTop: "15px"
-  }
+    marginTop: "15px",
+  },
 }));
 
 export const Col = withStyle(Column, () => ({
@@ -32,32 +32,32 @@ export const Col = withStyle(Column, () => ({
     marginBottom: "20px",
 
     ":last-child": {
-      marginBottom: 0
-    }
-  }
+      marginBottom: 0,
+    },
+  },
 }));
 
 const Row = withStyle(Rows, () => ({
   "@media only screen and (min-width: 768px) and (max-width: 991px)": {
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export const ProductCardWrapper = styled("div", () => ({
-  height: "100%"
+  height: "100%",
 }));
 
 export const LoaderWrapper = styled("div", () => ({
   width: "100%",
   height: "100vh",
   display: "flex",
-  flexWrap: "wrap"
+  flexWrap: "wrap",
 }));
 
 export const LoaderItem = styled("div", () => ({
   width: "25%",
   padding: "0 15px",
-  marginBottom: "30px"
+  marginBottom: "30px",
 }));
 
 const GET_PRODUCTS = gql`
@@ -65,8 +65,8 @@ const GET_PRODUCTS = gql`
     products(
       type: $type
       offset: $offset
-      organisationID: "61740991d5532f3a7d63d9e9",
-      isAdmin:true
+      organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
       isAllowed: true
     ) {
       items {
@@ -78,6 +78,7 @@ const GET_PRODUCTS = gql`
         price
         unit
         quantity
+        isAllowed
         salePrice
         discountInPercent
         weightInGrams
@@ -95,7 +96,11 @@ const GET_PRODUCTS = gql`
 
 const GET_CATEGORIES = gql`
   query getCategories($type: String) {
-    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9", isAdmin:true) {
+    categories(
+      type: $type
+      organisationID: "61740991d5532f3a7d63d9e9"
+      isAdmin: true
+    ) {
       _id
       icon
       name
@@ -109,11 +114,11 @@ const typeSelectOptions = [
   { value: "grocery", label: "Grocery" },
   { value: "women-cloths", label: "Women Cloths" },
   { value: "bags", label: "Bags" },
-  { value: "makeup", label: "Makeup" }
+  { value: "makeup", label: "Makeup" },
 ];
 const priceSelectOptions = [
   { value: "highestToLowest", label: "Highest To Lowest" },
-  { value: "lowestToHighest", label: "Lowest To Highest" }
+  { value: "lowestToHighest", label: "Lowest To Highest" },
 ];
 
 export default function Products() {
@@ -124,14 +129,15 @@ export default function Products() {
   const [search, setSearch] = useState([]);
 
   const [categoryList, setCategoryList] = useState();
-  const { data: categoryData, error: categoriesError } =
-    useQuery(GET_CATEGORIES);
+  const { data: categoryData, error: categoriesError } = useQuery(
+    GET_CATEGORIES
+  );
 
   useEffect(() => {
     if (categoryData) {
       let temp = categoryData.categories.map((category) => ({
         value: category.name,
-        label: category.name
+        label: category.name,
       }));
       setCategoryList(temp);
     }
@@ -148,7 +154,7 @@ export default function Products() {
     toggleLoading(true);
     fetchMore({
       variables: {
-        offset: data.products.items.length
+        offset: data.products.items.length,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         toggleLoading(false);
@@ -157,21 +163,21 @@ export default function Products() {
           products: {
             __typename: prev.products.__typename,
             items: [...prev.products.items, ...fetchMoreResult.products.items],
-            hasMore: fetchMoreResult.products.hasMore
-          }
+            hasMore: fetchMoreResult.products.hasMore,
+          },
         });
-      }
+      },
     });
   }
   function handlePriceSort({ value }) {
     setPriceOrder(value);
     if (value.length) {
       refetch({
-        sortByPrice: value[0].value
+        sortByPrice: value[0].value,
       });
     } else {
       refetch({
-        sortByPrice: null
+        sortByPrice: null,
       });
     }
   }
@@ -179,11 +185,11 @@ export default function Products() {
     setType(value);
     if (value.length) {
       refetch({
-        type: value[0].value
+        type: value[0].value,
       });
     } else {
       refetch({
-        type: null
+        type: null,
       });
     }
   }
