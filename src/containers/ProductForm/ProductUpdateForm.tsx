@@ -165,6 +165,7 @@ const AddProduct: React.FC<Props> = () => {
       vendorID: vendorTags._id,
       organisationID: "61740991d5532f3a7d63d9e9",
       published: publish,
+      isallowed: publish
     };
 
     console.log("Updated Product", updatedProduct);

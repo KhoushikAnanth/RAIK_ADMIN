@@ -67,7 +67,7 @@ const GET_PRODUCTS = gql`
       offset: $offset
       organisationID: "61740991d5532f3a7d63d9e9"
       isAdmin: true
-      isAllowed: true
+      isAllowed: false
     ) {
       items {
         _id
@@ -78,7 +78,7 @@ const GET_PRODUCTS = gql`
         price
         unit
         quantity
-        isAllowed
+        isallowed
         salePrice
         discountInPercent
         weightInGrams
