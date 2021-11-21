@@ -40,6 +40,7 @@ const GET_ORDERS = gql`
       amount
       payment_method
       status
+      deliveryTime
     }
   }
 `;
@@ -258,7 +259,7 @@ export default function Orders() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(70px, 100px)  minmax(70px, 100px)">
+              <StyledTable $gridTemplateColumns="minmax(70px, 70px) minmax(150px, auto) minmax(150px, auto) minmax(200px, max-content) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(150px, auto) minmax(70px, 100px)  minmax(70px, 100px) minmax(70px, 100px)">
                 {/* <StyledHeadCell>
                   <Checkbox
                     type="checkbox"
@@ -285,10 +286,11 @@ export default function Orders() {
                 <StyledHeadCell>Customer Name</StyledHeadCell>
                 <StyledHeadCell>Time</StyledHeadCell>
                 <StyledHeadCell>Delivery Address</StyledHeadCell>
+                <StyledHeadCell>Delivery Time</StyledHeadCell>
                 <StyledHeadCell>Pincode</StyledHeadCell>
                 <StyledHeadCell>Contact</StyledHeadCell>
                 <StyledHeadCell>Amount</StyledHeadCell>
-                <StyledHeadCell>Payment Method</StyledHeadCell>
+                <StyledHeadCell>PayM</StyledHeadCell>
                 <StyledHeadCell>Status</StyledHeadCell>
                 <StyledHeadCell>View</StyledHeadCell>
                 {data ? (
@@ -322,6 +324,7 @@ export default function Orders() {
                           {dayjs(row["creation_date"]).format("DD MMM YYYY")}
                         </StyledCell>
                         <StyledCell>{row["address"]}</StyledCell>
+                        <StyledCell>{row["deliveryTime"]}</StyledCell>
                         <StyledCell>{row["pincode"]}</StyledCell>
                         <StyledCell>{row["contact_number"]}</StyledCell>
                         <StyledCell>₹{row["amount"]}</StyledCell>
