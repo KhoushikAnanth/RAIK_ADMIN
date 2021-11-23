@@ -316,7 +316,7 @@ const AddProduct: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Name</FormLabel>
                   <Input
-                    inputRef={register({ required: true, maxLength: 25 })}
+                    inputRef={register({ required: true, maxLength: 50 })}
                     name="name"
                   />
                 </FormFields>
