@@ -13,6 +13,7 @@ import VendorsForm from "../VendorsForm/VendorsForm";
 import StaffMemberForm from "../StaffMemberForm/StaffMemberForm";
 import OrderDetails from "../Orders/OrderDetails";
 import Sidebar from "../Layout/Sidebar/Sidebar";
+import Slotform from "../SlotForm/SlotForm"
 
 /** Components Name Constants */
 const DRAWER_COMPONENTS = {
@@ -23,6 +24,7 @@ const DRAWER_COMPONENTS = {
   STAFF_MEMBER_FORM: StaffMemberForm,
   VENDORS_FORM: VendorsForm,
   ORDER_DETAILS: OrderDetails,
+  SLOT: Slotform,
   SIDEBAR: Sidebar
 };
 

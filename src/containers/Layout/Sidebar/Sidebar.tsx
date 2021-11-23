@@ -16,7 +16,8 @@ import {
   COUPONS,
   STAFF_MEMBERS,
   SETTINGS,
-  VENDORS
+  VENDORS,
+  SLOTS,
 } from "settings/constants";
 import { AuthContext } from "context/auth";
 
@@ -83,6 +84,13 @@ const sidebarMenus = [
   {
     name: "Menu",
     path: VENDORS,
+    exact: false,
+    icon: <CustomerIcon />,
+    disabled: false
+  },
+  {
+    name: "Slot",
+    path: SLOTS,
     exact: false,
     icon: <CustomerIcon />,
     disabled: false

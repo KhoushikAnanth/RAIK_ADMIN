@@ -12,6 +12,7 @@ import {
   STAFF_MEMBERS,
   SITE_SETTINGS,
   VENDORS,
+  SLOTS,
 } from 'settings/constants';
 import AuthProvider, { AuthContext } from 'context/auth';
 import { InLineLoader } from 'components/InlineLoader/InlineLoader';
@@ -25,6 +26,7 @@ const SiteSettingForm = lazy(() =>
   import('containers/SiteSettingForm/SiteSettingForm')
 );
 const StaffMembers = lazy(() => import('containers/StaffMembers/StaffMembers'));
+const Slots = lazy(() => import('containers/Slot/Slot'));
 const Vendors = lazy(() => import('containers/Vendors/Vendors'));
 const Customers = lazy(() => import('containers/Customers/Customers'));
 const Coupons = lazy(() => import('containers/Coupons/Coupons'));
@@ -118,6 +120,13 @@ const Routes = () => {
             <AdminLayout>
               <Suspense fallback={<InLineLoader />}>
                 <StaffMembers />
+              </Suspense>
+            </AdminLayout>
+          </PrivateRoute>
+          <PrivateRoute path={SLOTS}>
+            <AdminLayout>
+              <Suspense fallback={<InLineLoader />}>
+                <Slots />
               </Suspense>
             </AdminLayout>
           </PrivateRoute>
