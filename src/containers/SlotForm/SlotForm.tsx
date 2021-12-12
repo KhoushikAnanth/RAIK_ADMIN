@@ -47,6 +47,7 @@ const StaffMemberForm: React.FC<Props> = (props) => {
       title: data.title,
       type: data.type,
       time_slot: data.time_slot,
+      published: false
     };
     console.log(data);
     createStaff({ variables: { slotInput: newSlot } });
@@ -145,7 +146,7 @@ const StaffMemberForm: React.FC<Props> = (props) => {
               },
             }}
           >
-            Add Staff
+            Add Slot
           </Button>
         </ButtonGroup>
       </Form>
