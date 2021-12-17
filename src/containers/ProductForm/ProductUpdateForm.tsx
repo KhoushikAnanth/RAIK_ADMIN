@@ -165,7 +165,7 @@ const AddProduct: React.FC<Props> = () => {
       vendorID: vendorTags._id,
       organisationID: "61740991d5532f3a7d63d9e9",
       published: publish,
-      isallowed: publish
+      isallowed: publish,
     };
 
     console.log("Updated Product", updatedProduct);
@@ -224,7 +224,7 @@ const AddProduct: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Name</FormLabel>
                   <Input
-                    inputRef={register({ required: true, maxLength: 20 })}
+                    inputRef={register({ required: true, maxLength: 50 })}
                     name="name"
                   />
                 </FormFields>
@@ -232,6 +232,7 @@ const AddProduct: React.FC<Props> = () => {
                 <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
+                    inputRef={register({ required: true, maxLength: 300 })}
                     value={description}
                     onChange={handleDescriptionChange}
                   />

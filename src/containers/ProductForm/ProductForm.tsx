@@ -332,6 +332,7 @@ const AddProduct: React.FC<Props> = (props) => {
                 <FormFields>
                   <FormLabel>Description</FormLabel>
                   <Textarea
+                    inputRef={register({ required: true, maxLength: 300 })}
                     value={description}
                     onChange={handleDescriptionChange}
                   />
