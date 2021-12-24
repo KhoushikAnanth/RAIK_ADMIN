@@ -23,7 +23,7 @@ import NoResult from "components/NoResult/NoResult";
 
 const GET_SLOTS = gql`
   query getSlots {
-    slots(organisationID: "61740991d5532f3a7d63d9e9", isAllowed: true) {
+    slots(organisationID: "61c59c3620fc430008c3174b", isAllowed: true) {
       _id
       type
       title

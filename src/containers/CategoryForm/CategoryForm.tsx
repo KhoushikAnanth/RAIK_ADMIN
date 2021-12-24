@@ -22,7 +22,7 @@ import UploadFiles from "utilities/uploadFile";
 
 const GET_CATEGORIES = gql`
   query getCategories($type: String) {
-    categories(type: $type, organisationID: "61740991d5532f3a7d63d9e9", isAdmin:true) {
+    categories(type: $type, organisationID: "61c59c3620fc430008c3174b", isAdmin:true) {
       _id
       icon
       name
@@ -83,7 +83,7 @@ const AddCategory: React.FC<Props> = (props) => {
       slug: data.slug,
       icon: fileURL ? fileURL[0] : null,
       creation_date: new Date(),
-      organisationID: "61740991d5532f3a7d63d9e9"
+      organisationID: "61c59c3620fc430008c3174b"
     };
     createCategory({
       variables: { category: newCategory }

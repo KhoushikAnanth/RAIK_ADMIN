@@ -65,7 +65,7 @@ const GET_PRODUCTS = gql`
     products(
       type: $type
       offset: $offset
-      organisationID: "61740991d5532f3a7d63d9e9"
+      organisationID: "61c59c3620fc430008c3174b"
       isAdmin: true
       isAllowed: false
     ) {
@@ -98,7 +98,7 @@ const GET_CATEGORIES = gql`
   query getCategories($type: String) {
     categories(
       type: $type
-      organisationID: "61740991d5532f3a7d63d9e9"
+      organisationID: "61c59c3620fc430008c3174b"
       isAdmin: true
     ) {
       _id

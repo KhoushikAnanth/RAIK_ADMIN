@@ -6,12 +6,15 @@ import Input from "components/Input/Input";
 import Select from "components/Select/Select";
 import { useQuery, gql } from "@apollo/client";
 import { Wrapper, Header, Heading } from "components/Wrapper.style";
+import Button, { KIND, SIZE, SHAPE } from "components/Button/Button";
+import { FaEye } from "react-icons/fa";
+import { useDrawerDispatch } from "context/DrawerContext";
 
 import {
   TableWrapper,
   StyledTable,
   StyledHeadCell,
-  StyledBodyCell
+  StyledBodyCell,
 } from "./Customers.style";
 import NoResult from "components/NoResult/NoResult";
 
@@ -20,7 +23,7 @@ const GET_CUSTOMERS = gql`
     customers(
       searchBy: $searchBy
       sortBy: $sortBy
-      organisationID: "61740991d5532f3a7d63d9e9"
+      organisationID: "61c59c3620fc430008c3174b"
     ) {
       _id
       name
@@ -35,15 +38,15 @@ const Col = withStyle(Column, () => ({
     marginBottom: "20px",
 
     ":last-child": {
-      marginBottom: 0
-    }
-  }
+      marginBottom: 0,
+    },
+  },
 }));
 
 const Row = withStyle(Rows, () => ({
   "@media only screen and (min-width: 768px)": {
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 const ImageWrapper = styled("div", ({ $theme }) => ({
@@ -55,23 +58,35 @@ const ImageWrapper = styled("div", ({ $theme }) => ({
   borderTopRightRadius: "20px",
   borderBottomRightRadius: "20px",
   borderBottomLeftRadius: "20px",
-  backgroundColor: $theme.colors.backgroundF7
+  backgroundColor: $theme.colors.backgroundF7,
 }));
 
 const Image = styled("img", () => ({
   width: "100%",
-  height: "auto"
+  height: "auto",
 }));
 
 const sortByOptions = [
   { value: "highestToLowest", label: "Highest To Lowest" },
-  { value: "lowestToHighest", label: "Lowest To Highest" }
+  { value: "lowestToHighest", label: "Lowest To Highest" },
 ];
 
 export default function Customers() {
   const { data, error, refetch } = useQuery(GET_CUSTOMERS);
   const [stock, setStock] = useState([]);
   const [search, setSearch] = useState([]);
+
+  const dispatch = useDrawerDispatch();
+
+  const openDrawer = React.useCallback(
+    (data) =>
+      dispatch({
+        type: "OPEN_DRAWER",
+        drawerComponent: "ORDER_DETAILS",
+        data: data,
+      }),
+    [dispatch]
+  );
 
   if (error) {
     return <div>Error! {error.message}</div>;
@@ -81,11 +96,11 @@ export default function Customers() {
     setStock(value);
     if (value.length) {
       refetch({
-        sortBy: value[0].value
+        sortBy: value[0].value,
       });
     } else {
       refetch({
-        sortBy: null
+        sortBy: null,
       });
     }
   }
@@ -105,7 +120,7 @@ export default function Customers() {
           <Header
             style={{
               marginBottom: 30,
-              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)"
+              boxShadow: "0 0 5px rgba(0, 0 ,0, 0.05)",
             }}
           >
             <Col md={3}>
@@ -140,13 +155,13 @@ export default function Customers() {
 
           <Wrapper style={{ boxShadow: "0 0 5px rgba(0, 0 , 0, 0.05)" }}>
             <TableWrapper>
-              <StyledTable $gridTemplateColumns="minmax(80px, 80px) minmax(200px, auto) minmax(200px, 300px) minmax(150px, max-content) minmax(150px, max-content) ">
+              <StyledTable $gridTemplateColumns="minmax(80px, 80px) minmax(200px, auto) minmax(200px, 300px) minmax(150px, max-content) minmax(150px, max-content)   ">
                 <StyledHeadCell>ID</StyledHeadCell>
                 <StyledHeadCell>Name</StyledHeadCell>
                 <StyledHeadCell>Email</StyledHeadCell>
-                <StyledHeadCell>Contact</StyledHeadCell>
-                {/* <StyledHeadCell>Total Order</StyledHeadCell> */}
                 <StyledHeadCell>Joining Date</StyledHeadCell>
+                <StyledHeadCell>View</StyledHeadCell>
+
 
                 {data ? (
                   data.customers.length ? (
@@ -164,6 +179,18 @@ export default function Customers() {
                         <StyledBodyCell>
                           {dayjs(row["creation_date"]).format("DD MMM YYYY")}
                         </StyledBodyCell>
+                        <StyledBodyCell>
+                          <Button
+                            kind={KIND.minimal}
+                            size={SIZE.compact}
+                            shape={SHAPE.round}
+                            onClick={() => {
+                              openDrawer(row);
+                            }}
+                          >
+                            <FaEye />
+                          </Button>
+                        </StyledBodyCell>
                       </React.Fragment>
                     ))
                   ) : (
@@ -171,7 +198,7 @@ export default function Customers() {
                       hideButton={false}
                       style={{
                         gridColumnStart: "1",
-                        gridColumnEnd: "one"
+                        gridColumnEnd: "one",
                       }}
                     />
                   )
